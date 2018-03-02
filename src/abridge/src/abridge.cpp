@@ -83,7 +83,7 @@ ros::Publisher sonarRightPublish;
 ros::Publisher infoLogPublisher;
 ros::Publisher heartbeatPublisher;
 
-ros::Publisher odomIMUPublisher;
+ros::Publisher odomXY;
 
 ros::Publisher encoderPublisher;
 
@@ -158,7 +158,7 @@ int main(int argc, char **argv) {
     heartbeatPublisher = aNH.advertise<std_msgs::String>((publishedName + "/abridge/heartbeat"), 1, true);
     encoderPublisher = aNH.advertise<geometry_msgs::Twist>((publishedName + "/encoders"), 10);
 
-    odomIMUPublisher = aNH.advertise<sensor_msgs::Imu>((publishedName + "/odomImu"), 10);
+    odomXY= aNH.advertise<nav_msgs::Odometry>((publishedName + "/odomXY"), 10);
 
     driveControlSubscriber = aNH.subscribe((publishedName + "/driveControl"), 10, driveCommandHandler);
     fingerAngleSubscriber = aNH.subscribe((publishedName + "/fingerAngle/cmd"), 1, fingerAngleHandler);
@@ -356,15 +356,16 @@ void parseData(string str) {
 				odom.twist.twist.linear.y = atof(dataSet.at(6).c_str()) / 100.0;
 				odom.twist.twist.angular.z = atof(dataSet.at(7).c_str());
 
-                sensor_msgs::Imu odomimu;
-                odomimu.linear_acceleration.x = 0;
-                odomimu.linear_acceleration.y = 0; //atof(dataSet.at(3).c_str());
-                odomimu.linear_acceleration.z = 0;
-                odomimu.angular_velocity.x = 0;
-                odomimu.angular_velocity.y = 0;
-                odomimu.angular_velocity.z = 0;
-                odomimu.orientation = tf::createQuaternionMsgFromYaw(atof(dataSet.at(4).c_str()));
-                odomIMUPublisher.publish(odomimu);
+                nav_msgs::Odometry odom_XY;
+                odom_XY.pose.pose.position.x += atof(dataSet.at(10).c_str()) / 100.0;
+                odom_XY.pose.pose.position.y += atof(dataSet.at(11).c_str()) / 100.0;
+                odom_XY.pose.pose.position.z = 0.0;
+                odom_XY.pose.pose.orientation = 0;
+                odom_XY.twist.twist.linear.x = 0;
+                odom_XY.twist.twist.linear.y = 0;
+                odom_XY.twist.twist.angular.z = 0;
+
+                odomXY.publish(odom_XY);
 
                 geometry_msgs::Twist msg;
                 e_left = atof(dataSet.at(8).c_str());
