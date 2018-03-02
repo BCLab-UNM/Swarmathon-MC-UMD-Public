@@ -38,6 +38,7 @@ nav_msgs::Odometry odom;
 sensor_msgs::Range sonarLeft;
 sensor_msgs::Range sonarCenter;
 sensor_msgs::Range sonarRight;
+nav_msgs::Odometry odom_XY;
 USBSerial usb;
 const int baud = 115200;
 char dataCmd[] = "d\n";
@@ -356,7 +357,7 @@ void parseData(string str) {
 				odom.twist.twist.linear.y = atof(dataSet.at(6).c_str()) / 100.0;
 				odom.twist.twist.angular.z = atof(dataSet.at(7).c_str());
 
-                nav_msgs::Odometry odom_XY;
+
                 odom_XY.pose.pose.position.x += atof(dataSet.at(10).c_str()) / 100.0;
                 odom_XY.pose.pose.position.y += atof(dataSet.at(11).c_str()) / 100.0;
                 odom_XY.pose.pose.position.z = 0.0;
