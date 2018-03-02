@@ -360,7 +360,7 @@ void parseData(string str) {
                 odom_XY.pose.pose.position.x += atof(dataSet.at(10).c_str()) / 100.0;
                 odom_XY.pose.pose.position.y += atof(dataSet.at(11).c_str()) / 100.0;
                 odom_XY.pose.pose.position.z = 0.0;
-                odom_XY.pose.pose.orientation = 0;
+                odom_XY.pose.pose.orientation = tf::createQuaternionMsgFromYaw(atof(dataSet.at(4).c_str()));
                 odom_XY.twist.twist.linear.x = 0;
                 odom_XY.twist.twist.linear.y = 0;
                 odom_XY.twist.twist.angular.z = 0;
