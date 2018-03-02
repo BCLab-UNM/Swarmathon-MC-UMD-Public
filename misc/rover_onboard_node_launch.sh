@@ -96,10 +96,13 @@ fi
 nohup > logs/$HOSTNAME"_localization_navsat_log.txt" rosrun robot_localization navsat_transform_node __name:=$HOSTNAME\_NAVSAT _world_frame:=map _frequency:=10 _magnetic_declination_radians:=0.1530654 _yaw_offset:=0 /imu/data:=/$HOSTNAME/imu /gps/fix:=/$HOSTNAME/fix /odometry/filtered:=/$HOSTNAME/odom/ekf /odometry/gps:=/$HOSTNAME/odom/navsat &
 
 rosparam set /$HOSTNAME\_ODOM/odom0 /$HOSTNAME/odom
+rosparam set /$HOSTNAME\_ODOM/odom1 /$HOSTNAME/odomXY
 rosparam set /$HOSTNAME\_ODOM/imu0 /$HOSTNAME/imu
-rosparam set /$HOSTNAME\_ODOM/odom0_config [false,false,false,false,false,false,true,false,false,false,false,true,false,false,false]
-rosparam set /$HOSTNAME\_ODOM/imu0_config [false,false,false,false,false,true,false,false,false,false,false,true,true,false,false]
+rosparam set /$HOSTNAME\_ODOM/odom0_config [false,false,false,false,false,true,true,false,false,false,false,false,true,false,false]
+rosparam set /$HOSTNAME\_ODOM/imu0_config [false,false,false,false,false,false,false,false,false,true,true,true,true,true,true]
+rosparam set /$HOSTNAME\_ODOM/odom1_config [true,true,false,false,false,false,false,false,false,false,false,false,false,false,false]
 nohup > logs/$HOSTNAME"_odom_EKF_log.txt" rosrun robot_localization ekf_localization_node _two_d_mode:=true _world_frame:=odom _frequency:=10 __name:=$HOSTNAME\_ODOM /odometry/filtered:=/$HOSTNAME/odom/filtered &
+
 
 rosparam set /$HOSTNAME\_MAP/odom0 /$HOSTNAME/odom/navsat
 rosparam set /$HOSTNAME\_MAP/odom1 /$HOSTNAME/odom/filtered

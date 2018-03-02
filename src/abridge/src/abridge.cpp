@@ -38,6 +38,7 @@ nav_msgs::Odometry odom;
 sensor_msgs::Range sonarLeft;
 sensor_msgs::Range sonarCenter;
 sensor_msgs::Range sonarRight;
+nav_msgs::Odometry odom_XY;
 USBSerial usb;
 const int baud = 115200;
 char dataCmd[] = "d\n";
@@ -82,6 +83,8 @@ ros::Publisher sonarCenterPublish;
 ros::Publisher sonarRightPublish;
 ros::Publisher infoLogPublisher;
 ros::Publisher heartbeatPublisher;
+
+ros::Publisher odomXY;
 
 ros::Publisher encoderPublisher;
 
@@ -155,6 +158,8 @@ int main(int argc, char **argv) {
     infoLogPublisher = aNH.advertise<std_msgs::String>("/infoLog", 1, true);
     heartbeatPublisher = aNH.advertise<std_msgs::String>((publishedName + "/abridge/heartbeat"), 1, true);
     encoderPublisher = aNH.advertise<geometry_msgs::Twist>((publishedName + "/encoders"), 10);
+
+    odomXY= aNH.advertise<nav_msgs::Odometry>((publishedName + "/odomXY"), 10);
 
     driveControlSubscriber = aNH.subscribe((publishedName + "/driveControl"), 10, driveCommandHandler);
     fingerAngleSubscriber = aNH.subscribe((publishedName + "/fingerAngle/cmd"), 1, fingerAngleHandler);
@@ -351,6 +356,17 @@ void parseData(string str) {
 				odom.twist.twist.linear.x = atof(dataSet.at(5).c_str()) / 100.0;
 				odom.twist.twist.linear.y = atof(dataSet.at(6).c_str()) / 100.0;
 				odom.twist.twist.angular.z = atof(dataSet.at(7).c_str());
+
+
+                odom_XY.pose.pose.position.x += atof(dataSet.at(10).c_str()) / 100.0;
+                odom_XY.pose.pose.position.y += atof(dataSet.at(11).c_str()) / 100.0;
+                odom_XY.pose.pose.position.z = 0.0;
+                odom_XY.pose.pose.orientation = tf::createQuaternionMsgFromYaw(atof(dataSet.at(4).c_str()));
+                odom_XY.twist.twist.linear.x = 0;
+                odom_XY.twist.twist.linear.y = 0;
+                odom_XY.twist.twist.angular.z = 0;
+
+                odomXY.publish(odom_XY);
 
                 geometry_msgs::Twist msg;
                 e_left = atof(dataSet.at(8).c_str());
