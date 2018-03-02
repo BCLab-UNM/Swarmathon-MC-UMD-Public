@@ -123,7 +123,7 @@ int main(int argc, char **argv) {
     nodeTest = nh.advertise<std_msgs::Int16>((publishedName + "/test"), 1, true);
     fingerAnglePublish = nh.advertise<std_msgs::Float32>((publishedName + "/fingerAngle/cmd"), 1, true);
     wristAnglePublish = nh.advertise<std_msgs::Float32>((publishedName + "/wristAngle/cmd"), 1, true);
-    offsetPublish = nh.advertise<geometry_msgs::Twist>((publishedName + "/offset"), 1);
+    offsetPublish = nh.advertise<geometry_msgs::Twist>((publishedName + "/Offsets"), 1);
 
 
     modeSubscriber = nh.subscribe((publishedName + "/mode"), 1, modeHandler);
