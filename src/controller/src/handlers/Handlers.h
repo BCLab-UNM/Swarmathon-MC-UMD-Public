@@ -3,6 +3,7 @@
 
 //ROS messages
 #include <sensor_msgs/Range.h>
+#include <sensor_msgs/Imu.h>
 #include <nav_msgs/Odometry.h>
 #include <apriltags_ros/AprilTagDetectionArray.h>
 
@@ -109,6 +110,17 @@ public:
 
 };
 
+class IMUHandler{
+    static IMUHandler* s_instance;
+    IMUHandler(){}
+
+public:
+    float w;
+    float z;
+    static IMUHandler* instance();
+    void handle(const sensor_msgs::Imu::ConstPtr& message);
+};
+
 
 
 
@@ -154,6 +166,7 @@ public:
     }
 
 };
+
 
 
 

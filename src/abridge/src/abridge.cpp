@@ -93,6 +93,8 @@ ros::Subscriber driveControlSubscriber;
 ros::Subscriber fingerAngleSubscriber;
 ros::Subscriber wristAngleSubscriber;
 ros::Subscriber modeSubscriber;
+ros::Subscriber IMUOffsetSubscriber;
+ros::Subscriber offsetSubscriber;
 
 //Timers
 ros::Timer publishTimer;
@@ -101,6 +103,7 @@ ros::Timer publish_heartbeat_timer;
 //Callback handlers
 void publishHeartBeatTimerEventHandler(const ros::TimerEvent& event);
 void modeHandler(const std_msgs::UInt8::ConstPtr& message);
+void offsetHandler(const geometry_msgs::Twist::ConstPtr& msg);
 
 int _left;
 int _right;
@@ -120,6 +123,16 @@ int left_v;
 int right_v;
 int corrected_v_left;
 int corrected_v_right;
+
+float curr_imu_w = 0;
+float curr_imu_z = 0;
+float imu_offset_w = 0;
+float imu_offset_z = 0;
+
+float curr_odom_x = 0;
+float curr_odom_y = 0;
+float odom_offset_x = 0;
+float odom_offset_y = 0;
 
 DriveFix fix(&e_left, &e_right, &left_v, &right_v, &corrected_v_left, &corrected_v_right, 500);
 
@@ -165,6 +178,8 @@ int main(int argc, char **argv) {
     fingerAngleSubscriber = aNH.subscribe((publishedName + "/fingerAngle/cmd"), 1, fingerAngleHandler);
     wristAngleSubscriber = aNH.subscribe((publishedName + "/wristAngle/cmd"), 1, wristAngleHandler);
     modeSubscriber = aNH.subscribe((publishedName + "/mode"), 1, modeHandler);
+
+    offsetSubscriber = aNH.subscribe((publishedName + "/Offsets"), 1, offsetHandler);
 
 
     
@@ -357,14 +372,22 @@ void parseData(string str) {
 				odom.twist.twist.linear.y = atof(dataSet.at(6).c_str()) / 100.0;
 				odom.twist.twist.angular.z = atof(dataSet.at(7).c_str());
 
+                odom.pose.pose.orientation.w -= imu_offset_w;
+                odom.pose.pose.orientation.z -= imu_offset_z;
 
-                odom_XY.pose.pose.position.x += atof(dataSet.at(10).c_str()) / 100.0;
-                odom_XY.pose.pose.position.y += atof(dataSet.at(11).c_str()) / 100.0;
+                curr_imu_w = odom.pose.pose.orientation.w;
+                curr_imu_z = odom.pose.pose.orientation.z;
+
+                odom_XY.pose.pose.position.x += (atof(dataSet.at(10).c_str()) / 100.0) - odom_offset_x;
+                odom_XY.pose.pose.position.y += (atof(dataSet.at(11).c_str()) / 100.0) - odom_offset_y;
                 odom_XY.pose.pose.position.z = 0.0;
                 odom_XY.pose.pose.orientation = tf::createQuaternionMsgFromYaw(atof(dataSet.at(4).c_str()));
                 odom_XY.twist.twist.linear.x = 0;
                 odom_XY.twist.twist.linear.y = 0;
                 odom_XY.twist.twist.angular.z = 0;
+
+                curr_odom_x = odom_XY.pose.pose.position.x;
+                curr_odom_y = odom_XY.pose.pose.position.y;
 
                 odomXY.publish(odom_XY);
 
@@ -403,3 +426,14 @@ void publishHeartBeatTimerEventHandler(const ros::TimerEvent&) {
     msg.data = "";
     heartbeatPublisher.publish(msg);
 }
+
+void offsetHandler(const geometry_msgs::Twist::ConstPtr& msg){
+    odom_offset_x = curr_odom_x - msg->angular.x;
+    odom_offset_y = curr_odom_y - msg->angular.y;
+
+    imu_offset_w = curr_imu_w - msg->linear.x;
+    imu_offset_z = curr_imu_z - msg->linear.y;
+}
+
+
+

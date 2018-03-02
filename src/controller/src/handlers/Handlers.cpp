@@ -111,6 +111,26 @@ void EncoderHandler::handle(const geometry_msgs::Twist::ConstPtr& message){
 //==============================================================================//
 
 //==============================================================================//
+//                         IMU handler                                          //
+//==============================================================================//
+IMUHandler *IMUHandler::s_instance = 0;
+IMUHandler* IMUHandler::instance() {
+    if(!s_instance)
+        s_instance = new IMUHandler;
+    return s_instance;
+}
+
+void IMUHandler::handle(const sensor_msgs::Imu::ConstPtr& message){
+    w = message->orientation.w;
+    z = message->orientation.z;
+}
+
+
+//==============================================================================//
+//==============================================================================//
+
+
+//==============================================================================//
 //                          Targets handler methods                             //
 //==============================================================================//
 TargetHandler *TargetHandler::s_instance = 0;

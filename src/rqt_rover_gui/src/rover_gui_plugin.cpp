@@ -653,7 +653,7 @@ void RoverGUIPlugin::currentRoverChangedEventHandler(QListWidgetItem *current, Q
     //Set up subscribers
     image_transport::ImageTransport it(nh);
     camera_subscriber = it.subscribe("/"+selected_rover_name+"/targets/image", 1, &RoverGUIPlugin::cameraEventHandler, this, image_transport::TransportHints("theora"));
-    imu_subscriber = nh.subscribe("/"+selected_rover_name+"/imu", 10, &RoverGUIPlugin::IMUEventHandler, this);
+    imu_subscriber = nh.subscribe("/"+selected_rover_name+"/odom/filtered", 10, &RoverGUIPlugin::IMUEventHandler, this);
     us_center_subscriber = nh.subscribe("/"+selected_rover_name+"/sonarCenter", 10, &RoverGUIPlugin::centerUSEventHandler, this);
     us_left_subscriber = nh.subscribe("/"+selected_rover_name+"/sonarLeft", 10, &RoverGUIPlugin::leftUSEventHandler, this);
     us_right_subscriber = nh.subscribe("/"+selected_rover_name+"/sonarRight", 10, &RoverGUIPlugin::rightUSEventHandler, this);
@@ -986,20 +986,20 @@ void RoverGUIPlugin::leftUSEventHandler(const sensor_msgs::Range::ConstPtr& msg)
     ui.us_frame->setLeftRange(msg->range, min_range, max_range);
 }
 
-void RoverGUIPlugin::IMUEventHandler(const sensor_msgs::Imu::ConstPtr& msg)
+void RoverGUIPlugin::IMUEventHandler(const nav_msgs::Odometry::ConstPtr& msg)
 {
-    ui.imu_frame->setLinearAcceleration( msg->linear_acceleration.x,
-                                         msg->linear_acceleration.y,
-                                         msg->linear_acceleration.z );
+    ui.imu_frame->setLinearAcceleration( msg->twist.twist.linear.x,
+                                         msg->twist.twist.linear.y,
+                                         msg->twist.twist.linear.z);
 
-    ui.imu_frame->setAngularVelocity(    msg->angular_velocity.x,
-                                         msg->angular_velocity.y,
-                                         msg->angular_velocity.z    );
+    ui.imu_frame->setAngularVelocity(    msg->twist.twist.angular.x,
+                                         msg->twist.twist.angular.y,
+                                         msg->twist.twist.angular.z);
 
-    ui.imu_frame->setOrientation(        msg->orientation.w,
-                                         msg->orientation.x,
-                                         msg->orientation.y,
-                                         msg->orientation.z        );
+    ui.imu_frame->setOrientation(        msg->pose.pose.orientation.w,
+                                         msg->pose.pose.orientation.x,
+                                         msg->pose.pose.orientation.y,
+                                         msg->pose.pose.orientation.z);
 
 }
 
