@@ -21,6 +21,9 @@ class SearchForDropBehavior : public Behavior{
 
    Stages stage = ODOM_TARGET;
    int searchTry = 0;
+   int distance = 1;
+   float theta;
+   float x, y;
 
     public:
         SearchForDropBehavior() : Behavior(SEARCH_FOR_DROP_BEHAVIOR_TYPE){

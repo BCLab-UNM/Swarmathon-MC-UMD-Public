@@ -19,8 +19,8 @@ bool DropBehavior::tick(){
 
             cout<<"CENTERDRIVE: "<<hypot(x - currX, y - currY)<<endl;
 
-            //While disnace driven is less than 0.5 of a meter
-            if(hypot(x - currX, y - currY) < 0.5){
+            //While disnace driven is less than 0.3 of a meter
+            if(hypot(x - currX, y - currY) < 0.3){
                 // Drive forwards
                 DriveController::instance()->sendDriveCommand(slowDrive, slowDrive);
             } else {
