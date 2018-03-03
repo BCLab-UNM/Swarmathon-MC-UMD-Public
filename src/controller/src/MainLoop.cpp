@@ -180,7 +180,7 @@ void tick(const ros::TimerEvent&) {
         }
 
         if(stopped){
-            OffsetController::instance()->sendOffsets(OdometryHandler::instance()->getX(), OdometryHandler::instance()->getY(),
+            OffsetController::instance()->sendOffsets(0, 0,
                                                       IMUHandler::instance()->w, IMUHandler::instance()->z);
         }
 

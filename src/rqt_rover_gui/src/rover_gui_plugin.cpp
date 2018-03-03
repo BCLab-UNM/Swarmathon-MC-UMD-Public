@@ -653,7 +653,7 @@ void RoverGUIPlugin::currentRoverChangedEventHandler(QListWidgetItem *current, Q
     //Set up subscribers
     image_transport::ImageTransport it(nh);
     camera_subscriber = it.subscribe("/"+selected_rover_name+"/targets/image", 1, &RoverGUIPlugin::cameraEventHandler, this, image_transport::TransportHints("theora"));
-    imu_subscriber = nh.subscribe("/"+selected_rover_name+"/odom/filtered", 10, &RoverGUIPlugin::IMUEventHandler, this);
+    imu_subscriber = nh.subscribe("/"+selected_rover_name+"/odom/filteredOffset", 10, &RoverGUIPlugin::IMUEventHandler, this);
     us_center_subscriber = nh.subscribe("/"+selected_rover_name+"/sonarCenter", 10, &RoverGUIPlugin::centerUSEventHandler, this);
     us_left_subscriber = nh.subscribe("/"+selected_rover_name+"/sonarLeft", 10, &RoverGUIPlugin::leftUSEventHandler, this);
     us_right_subscriber = nh.subscribe("/"+selected_rover_name+"/sonarRight", 10, &RoverGUIPlugin::rightUSEventHandler, this);
