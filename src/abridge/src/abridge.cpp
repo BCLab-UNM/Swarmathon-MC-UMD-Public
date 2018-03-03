@@ -175,7 +175,7 @@ int main(int argc, char **argv) {
     infoLogPublisher = aNH.advertise<std_msgs::String>("/infoLog", 1, true);
     heartbeatPublisher = aNH.advertise<std_msgs::String>((publishedName + "/abridge/heartbeat"), 1, true);
     encoderPublisher = aNH.advertise<geometry_msgs::Twist>((publishedName + "/encoders"), 10);
-    odomFilteredOffset = aNH.advertise<geometry_msgs::Twist>((publishedName + "/odom/filteredOffset"), 10);
+    odomFilteredOffset = aNH.advertise<nav_msgs::Odometry>((publishedName + "/odom/filteredOffset"), 10);
 
     odomXY= aNH.advertise<nav_msgs::Odometry>((publishedName + "/odomXY"), 10);
 
@@ -435,12 +435,8 @@ void offsetHandler(const geometry_msgs::Twist::ConstPtr& msg){
 
 void odomHandler(const nav_msgs::Odometry::ConstPtr& msg){
 
-
-    offsetOdom.pose= msg->pose;
+offsetOdom.pose= msg->pose;
     offsetOdom.twist = msg->twist;
-    offsetOdom.header = msg->header;
-
-
 }
 
 
