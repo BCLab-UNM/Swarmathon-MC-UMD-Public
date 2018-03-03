@@ -426,18 +426,22 @@ void publishHeartBeatTimerEventHandler(const ros::TimerEvent&) {
 }
 
 void offsetHandler(const geometry_msgs::Twist::ConstPtr& msg){
-    odom_offset_x = msg->angular.x;
-    odom_offset_y = msg->angular.y;
+    odom_offset_x = curr_odom_x - msg->angular.x;
+    odom_offset_y = curr_odom_y - msg->angular.y;
 
     imu_offset_w = curr_imu_w - msg->linear.x;
     imu_offset_z = curr_imu_z - msg->linear.y;
 }
 
 void odomHandler(const nav_msgs::Odometry::ConstPtr& msg){
+    curr_odom_x = msg->pose.pose.position.x;
+    curr_odom_y = msg->pose.pose.position.y;
+    curr_imu_w = msg->pose.pose.orientation.w;
+    curr_imu_z = msg->pose.pose.orientation.z;
 
     offsetOdom.pose= msg->pose;
-    offsetOdom.pose.pose.position.x -= (msg->pose.pose.position.x - odom_offset_x);
-    offsetOdom.pose.pose.position.y -= (msg->pose.pose.position.y - odom_offset_y);
+    offsetOdom.pose.pose.position.x -= odom_offset_x;
+    offsetOdom.pose.pose.position.y -= odom_offset_y;
     offsetOdom.twist = msg->twist;
 }
 
