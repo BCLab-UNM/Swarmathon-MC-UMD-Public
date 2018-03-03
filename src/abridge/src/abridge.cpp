@@ -130,9 +130,11 @@ int corrected_v_right;
 
 float curr_imu_w = 0;
 float curr_imu_z = 0;
+
 float imu_offset_w = 0;
 float imu_offset_z = 0;
-bool imuReset = false;
+float prev_imu_offset_w = 0;
+float prev_imu_offset_z = 0;
 
 float curr_odom_x = 0;
 float curr_odom_y = 0;
@@ -375,12 +377,14 @@ void parseData(string str) {
 				odom.pose.pose.position.x += atof(dataSet.at(2).c_str()) / 100.0;
 				odom.pose.pose.position.y += atof(dataSet.at(3).c_str()) / 100.0;
 				odom.pose.pose.position.z = 0.0;
-				odom.pose.pose.orientation = tf::createQuaternionMsgFromYaw(atof(dataSet.at(4).c_str()));
-                if(imuReset){
-                    odom.pose.pose.orientation.w = imu_offset_w;
-                    odom.pose.pose.orientation.z = imu_offset_z;
-                    imuReset = false;
-                }
+                odom.pose.pose.orientation = tf::createQuaternionMsgFromYaw(atof(dataSet.at(4).c_str()));
+
+                imu_offset_w += odom.pose.pose.orientation.w - prev_imu_offset_w;
+                imu_offset_z += odom.pose.pose.orientation.z - prev_imu_offset_z;
+
+                prev_imu_offset_w = odom.pose.pose.orientation.w;
+                prev_imu_offset_z = odom.pose.pose.orientation.z;
+
 				odom.twist.twist.linear.x = atof(dataSet.at(5).c_str()) / 100.0;
 				odom.twist.twist.linear.y = atof(dataSet.at(6).c_str()) / 100.0;
 				odom.twist.twist.angular.z = atof(dataSet.at(7).c_str());
@@ -435,9 +439,8 @@ void offsetHandler(const geometry_msgs::Twist::ConstPtr& msg){
     odom_offset_x = curr_odom_x - msg->angular.x;
     odom_offset_y = curr_odom_y - msg->angular.y;
 
-    imu_offset_w = curr_imu_w - msg->linear.x;
-    imu_offset_z = curr_imu_z - msg->linear.y;
-    imuReset = true;
+    imu_offset_w = msg->linear.x;
+    imu_offset_z = msg->linear.y;
 }
 
 void odomHandler(const nav_msgs::Odometry::ConstPtr& msg){
@@ -449,6 +452,10 @@ void odomHandler(const nav_msgs::Odometry::ConstPtr& msg){
     offsetOdom.pose= msg->pose;
     offsetOdom.pose.pose.position.x -= odom_offset_x;
     offsetOdom.pose.pose.position.y -= odom_offset_y;
+
+    offsetOdom.pose.pose.orientation.w = imu_offset_w;
+    offsetOdom.pose.pose.orientation.z = imu_offset_z;
+
     offsetOdom.twist = msg->twist;
 }
 
