@@ -379,12 +379,6 @@ void parseData(string str) {
 				odom.pose.pose.position.z = 0.0;
                 odom.pose.pose.orientation = tf::createQuaternionMsgFromYaw(atof(dataSet.at(4).c_str()));
 
-                imu_offset_w += odom.pose.pose.orientation.w - prev_imu_offset_w;
-                imu_offset_z += odom.pose.pose.orientation.z - prev_imu_offset_z;
-
-                prev_imu_offset_w = odom.pose.pose.orientation.w;
-                prev_imu_offset_z = odom.pose.pose.orientation.z;
-
 				odom.twist.twist.linear.x = atof(dataSet.at(5).c_str()) / 100.0;
 				odom.twist.twist.linear.y = atof(dataSet.at(6).c_str()) / 100.0;
 				odom.twist.twist.angular.z = atof(dataSet.at(7).c_str());
@@ -448,6 +442,12 @@ void odomHandler(const nav_msgs::Odometry::ConstPtr& msg){
     curr_odom_y = msg->pose.pose.position.y;
     curr_imu_w = msg->pose.pose.orientation.w;
     curr_imu_z = msg->pose.pose.orientation.z;
+
+    imu_offset_w += msg->pose.pose.orientation.w - prev_imu_offset_w;
+    imu_offset_z += msg->pose.pose.orientation.z - prev_imu_offset_z;
+
+    prev_imu_offset_w = msg->pose.pose.orientation.w;
+    prev_imu_offset_z = msg->pose.pose.orientation.z;
 
     offsetOdom.pose= msg->pose;
     offsetOdom.pose.pose.position.x -= odom_offset_x;
