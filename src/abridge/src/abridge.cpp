@@ -436,8 +436,8 @@ void offsetHandler(const geometry_msgs::Twist::ConstPtr& msg){
 void odomHandler(const nav_msgs::Odometry::ConstPtr& msg){
 
     offsetOdom.pose= msg->pose;
-    offsetOdom.pose.pose.position.x -= odom_offset_x;
-    offsetOdom.pose.pose.position.y -= odom_offset_y;
+    offsetOdom.pose.pose.position.x -= (msg->pose.pose.position.x - odom_offset_x);
+    offsetOdom.pose.pose.position.y -= (msg->pose.pose.position.y - odom_offset_y);
     offsetOdom.twist = msg->twist;
 }
 
