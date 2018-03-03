@@ -20,5 +20,7 @@ void OffsetController::sendOffsets(float x, float y, float w, float z){
 
     msg.linear.x = w;
     msg.linear.y = z;
+
+    offsetPublisher.publish(msg);
 }
 
