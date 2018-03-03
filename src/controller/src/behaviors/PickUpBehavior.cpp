@@ -69,11 +69,15 @@ bool PickUpBehavior::tick(){
                 }
 
             } else {
-                DriveController::instance()->stop();
-                SonarHandler::instance()->setEnable(true);
-                ClawController::instance()->fingerOpen();
-                ClawController::instance()->wristUp();
-                return true;
+                if(precisionDrive){
+                    currentStage = RETRY;
+                }else{
+                    DriveController::instance()->stop();
+                    SonarHandler::instance()->setEnable(true);
+                    ClawController::instance()->fingerOpen();
+                    ClawController::instance()->wristUp();
+                    return true;
+                }
             }
             break;
 
