@@ -2,6 +2,8 @@
 #define OFFSET_CONTROLLER_H
 #include "ros/ros.h"
 #include <geometry_msgs/Twist.h>
+#include <nav_msgs/Odometry.h>
+#include "../handlers/Handlers.h"
 
 class OffsetController{
     ros::Publisher offsetPublisher;

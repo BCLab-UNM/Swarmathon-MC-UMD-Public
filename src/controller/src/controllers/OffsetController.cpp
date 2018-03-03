@@ -15,8 +15,8 @@ void OffsetController::registerPublishers(ros::Publisher& offsetPublisher){
 
 void OffsetController::sendOffsets(float x, float y, float w, float z){
     geometry_msgs::Twist msg;
-    msg.angular.x = x;
-    msg.angular.y = y;
+    msg.angular.x = OdometryHandler::instance()->getX() - x;;
+    msg.angular.y = OdometryHandler::instance()->getY() - y;
 
     msg.linear.x = w;
     msg.linear.y = z;

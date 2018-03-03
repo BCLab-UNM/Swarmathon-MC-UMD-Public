@@ -36,6 +36,8 @@
 #include "controllers/ClawController.h"
 #include "controllers/OffsetController.h"
 
+#include "message_filters/subscriber.h"
+
 using namespace std;
 
 
@@ -76,6 +78,7 @@ ros::Subscriber rightSonarSubscriber;
 ros::Subscriber odometrySubscriber;
 ros::Subscriber encoderSubscriber;
 ros::Subscriber IMUSubscriber;
+ros::Subscriber odomFilteredFilter;
 
 
 //Times for ticking the stack
@@ -123,7 +126,7 @@ int main(int argc, char **argv) {
     nodeTest = nh.advertise<std_msgs::Int16>((publishedName + "/test"), 1, true);
     fingerAnglePublish = nh.advertise<std_msgs::Float32>((publishedName + "/fingerAngle/cmd"), 1, true);
     wristAnglePublish = nh.advertise<std_msgs::Float32>((publishedName + "/wristAngle/cmd"), 1, true);
-    offsetPublish = nh.advertise<geometry_msgs::Twist>((publishedName + "/Offsets"), 1);
+    offsetPublish = nh.advertise<geometry_msgs::Twist>((publishedName + "/odom/Offsets"), 1);
 
 
     modeSubscriber = nh.subscribe((publishedName + "/mode"), 1, modeHandler);
@@ -131,7 +134,7 @@ int main(int argc, char **argv) {
     leftSonarSubscriber = nh.subscribe((publishedName + "/sonarLeft"), 10, &SonarHandler::handleLeft, SonarHandler::instance());
     centerSonarSubscriber = nh.subscribe((publishedName + "/sonarCenter"), 10, &SonarHandler::handleCenter, SonarHandler::instance());
     rightSonarSubscriber = nh.subscribe((publishedName + "/sonarRight"), 10, &SonarHandler::handleRight, SonarHandler::instance());
-    odometrySubscriber = nh.subscribe((publishedName + "/odom/filtered"), 10, &OdometryHandler::handle, OdometryHandler::instance());
+    odometrySubscriber = nh.subscribe((publishedName + "/odom/filteredOffset"), 10, &OdometryHandler::handle, OdometryHandler::instance());
     targetSubscriber = nh.subscribe((publishedName + "/targets"), 10, &TargetHandler::handle, TargetHandler::instance());
     encoderSubscriber = nh.subscribe((publishedName + "/encoders"), 10, &EncoderHandler::handle, EncoderHandler::instance());
     IMUSubscriber = nh.subscribe((publishedName + "/imu"), 10, &IMUHandler::handle, IMUHandler::instance());
