@@ -117,6 +117,10 @@ class IMUHandler{
 public:
     float w;
     float z;
+    float x;
+    float y;
+
+    float theta;
     static IMUHandler* instance();
     void handle(const sensor_msgs::Imu::ConstPtr& message);
 };

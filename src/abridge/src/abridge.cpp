@@ -453,8 +453,10 @@ void odomHandler(const nav_msgs::Odometry::ConstPtr& msg){
     offsetOdom.pose.pose.position.x -= odom_offset_x;
     offsetOdom.pose.pose.position.y -= odom_offset_y;
 
-    offsetOdom.pose.pose.orientation.w = imu_offset_w;
+    offsetOdom.pose.pose.orientation.w = msg->pose.pose.orientation.w;
     offsetOdom.pose.pose.orientation.z = imu_offset_z;
+    offsetOdom.pose.pose.orientation.x = msg->pose.pose.orientation.x;
+    offsetOdom.pose.pose.orientation.y = msg->pose.pose.orientation.y;
 
     offsetOdom.twist = msg->twist;
 }
