@@ -31,6 +31,7 @@ void parseData(string data);
 std::string getHumanFriendlyTime();
 
 //Globals
+nav_msgs::Odometry offsetOdom;
 geometry_msgs::QuaternionStamped fingerAngle;
 geometry_msgs::QuaternionStamped wristAngle;
 sensor_msgs::Imu imu;
@@ -317,6 +318,7 @@ void publishRosTopics() {
     sonarLeftPublish.publish(sonarLeft);
     sonarCenterPublish.publish(sonarCenter);
     sonarRightPublish.publish(sonarRight);
+    odomFilteredOffset.publish(offsetOdom);
 }
 
 void parseData(string str) {
@@ -432,13 +434,13 @@ void offsetHandler(const geometry_msgs::Twist::ConstPtr& msg){
 }
 
 void odomHandler(const nav_msgs::Odometry::ConstPtr& msg){
-    nav_msgs::Odometry offsetOdom;
+
 
     offsetOdom.pose= msg->pose;
     offsetOdom.twist = msg->twist;
     offsetOdom.header = msg->header;
 
-    odomFilteredOffset.publish(offsetOdom);
+
 }
 
 
