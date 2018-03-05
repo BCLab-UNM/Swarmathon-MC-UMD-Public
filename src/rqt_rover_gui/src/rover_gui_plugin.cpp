@@ -405,7 +405,7 @@ void RoverGUIPlugin::encoderEventHandler(const ros::MessageEvent<const nav_msgs:
     QString y_str; y_str.setNum(y);
 
     // Extract rover name from the message source. Get the topic name from the event header. Can't use publisher_name here because it is just /gazebo.
-    size_t found = topic.find("/odom/filtered");
+    size_t found = topic.find("/odom/filteredOffset");
     string rover_name = topic.substr(1,found-1);
 
     // Store map info for the appropriate rover name
@@ -653,7 +653,7 @@ void RoverGUIPlugin::currentRoverChangedEventHandler(QListWidgetItem *current, Q
     //Set up subscribers
     image_transport::ImageTransport it(nh);
     camera_subscriber = it.subscribe("/"+selected_rover_name+"/targets/image", 1, &RoverGUIPlugin::cameraEventHandler, this, image_transport::TransportHints("theora"));
-    imu_subscriber = nh.subscribe("/"+selected_rover_name+"/imu", 10, &RoverGUIPlugin::IMUEventHandler, this);
+    imu_subscriber = nh.subscribe("/"+selected_rover_name+"/odom/filteredOffset", 10, &RoverGUIPlugin::IMUEventHandler, this);
     us_center_subscriber = nh.subscribe("/"+selected_rover_name+"/sonarCenter", 10, &RoverGUIPlugin::centerUSEventHandler, this);
     us_left_subscriber = nh.subscribe("/"+selected_rover_name+"/sonarLeft", 10, &RoverGUIPlugin::leftUSEventHandler, this);
     us_right_subscriber = nh.subscribe("/"+selected_rover_name+"/sonarRight", 10, &RoverGUIPlugin::rightUSEventHandler, this);
@@ -875,7 +875,7 @@ void RoverGUIPlugin::pollRoversTimerEventHandler()
         status_subscribers[*i] = nh.subscribe("/"+*i+"/status", 10, &RoverGUIPlugin::statusEventHandler, this);
         waypoint_subscribers[*i] = nh.subscribe("/"+*i+"/waypoints", 10, &RoverGUIPlugin::waypointEventHandler, this);
         obstacle_subscribers[*i] = nh.subscribe("/"+*i+"/obstacle", 10, &RoverGUIPlugin::obstacleEventHandler, this);
-        encoder_subscribers[*i] = nh.subscribe("/"+*i+"/odom/filtered", 10, &RoverGUIPlugin::encoderEventHandler, this);
+        encoder_subscribers[*i] = nh.subscribe("/"+*i+"/odom/filteredOffset", 10, &RoverGUIPlugin::encoderEventHandler, this);
         ekf_subscribers[*i] = nh.subscribe("/"+*i+"/odom/ekf", 10, &RoverGUIPlugin::EKFEventHandler, this);
         gps_subscribers[*i] = nh.subscribe("/"+*i+"/odom/navsat", 10, &RoverGUIPlugin::GPSEventHandler, this);
         gps_nav_solution_subscribers[*i] = nh.subscribe("/"+*i+"/navsol", 10, &RoverGUIPlugin::GPSNavSolutionEventHandler, this);
@@ -986,20 +986,20 @@ void RoverGUIPlugin::leftUSEventHandler(const sensor_msgs::Range::ConstPtr& msg)
     ui.us_frame->setLeftRange(msg->range, min_range, max_range);
 }
 
-void RoverGUIPlugin::IMUEventHandler(const sensor_msgs::Imu::ConstPtr& msg)
+void RoverGUIPlugin::IMUEventHandler(const nav_msgs::Odometry::ConstPtr& msg)
 {
-    ui.imu_frame->setLinearAcceleration( msg->linear_acceleration.x,
-                                         msg->linear_acceleration.y,
-                                         msg->linear_acceleration.z );
+    ui.imu_frame->setLinearAcceleration( msg->twist.twist.linear.x,
+                                         msg->twist.twist.linear.y,
+                                         msg->twist.twist.linear.z);
 
-    ui.imu_frame->setAngularVelocity(    msg->angular_velocity.x,
-                                         msg->angular_velocity.y,
-                                         msg->angular_velocity.z    );
+    ui.imu_frame->setAngularVelocity(    msg->twist.twist.angular.x,
+                                         msg->twist.twist.angular.y,
+                                         msg->twist.twist.angular.z);
 
-    ui.imu_frame->setOrientation(        msg->orientation.w,
-                                         msg->orientation.x,
-                                         msg->orientation.y,
-                                         msg->orientation.z        );
+    ui.imu_frame->setOrientation(        msg->pose.pose.orientation.w,
+                                         msg->pose.pose.orientation.x,
+                                         msg->pose.pose.orientation.y,
+                                         msg->pose.pose.orientation.z);
 
 }
 

@@ -111,6 +111,35 @@ void EncoderHandler::handle(const geometry_msgs::Twist::ConstPtr& message){
 //==============================================================================//
 
 //==============================================================================//
+//                         IMU handler                                          //
+//==============================================================================//
+IMUHandler *IMUHandler::s_instance = 0;
+IMUHandler* IMUHandler::instance() {
+    if(!s_instance)
+        s_instance = new IMUHandler;
+    return s_instance;
+}
+
+void IMUHandler::handle(const sensor_msgs::Imu::ConstPtr& message){
+    w = message->orientation.w;
+    z = message->orientation.z;
+    x = message->orientation.x;
+    y = message->orientation.y;
+
+    //Get theta rotation by converting quaternion orientation to pitch/roll/yaw
+    tf::Quaternion q(message->orientation.x, message->orientation.y, message->orientation.z, message->orientation.w);
+    tf::Matrix3x3 m(q);
+    double roll, pitch, yaw;
+    m.getRPY(roll, pitch, yaw);
+    theta = yaw;
+}
+
+
+//==============================================================================//
+//==============================================================================//
+
+
+//==============================================================================//
 //                          Targets handler methods                             //
 //==============================================================================//
 TargetHandler *TargetHandler::s_instance = 0;

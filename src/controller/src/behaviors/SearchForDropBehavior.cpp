@@ -12,22 +12,42 @@ bool SearchForDropBehavior::tick(){
                 TargetHandler::instance()->setEnabled(false);
                 if(DriveController::instance()->goToLocation(0, 0)){
                     stage = SEARCH_FOR_CENTER;
+                    theta = OdometryHandler::instance()->getTheta();
+                    x = OdometryHandler::instance()->getX() + ((distance) * cos(theta));
+                    y = OdometryHandler::instance()->getY() + ((distance) * sin(theta));
                 }
+
 
                 break;
             }
             case SEARCH_FOR_CENTER:
             {
+                cout<<"SEARCHCENTER: "<<x << " "<<y<<endl;
                 //If we do not see any tags yet. Try to drive around
                 //If this is our first search try
                 if(searchTry == 0){
                     // Drive one meter forward
-                    if(DriveController::instance()->goToDistance(1, OdometryHandler::instance()->getTheta())){
+                    if(DriveController::instance()->goToLocation(x, y)){
+                        searchTry++;
+                        theta = OdometryHandler::instance()->getTheta() + M_PI_2;
+                        x = OdometryHandler::instance()->getX() + ((distance) * cos(theta));
+                        y = OdometryHandler::instance()->getY() + ((distance) * sin(theta));
+                    }
+                } else if(searchTry >= 1){
+                    if(DriveController::instance()->goToLocation(x, y)){
+                        theta = OdometryHandler::instance()->getTheta() + M_PI_2;
+                        x = OdometryHandler::instance()->getX() + ((distance) * cos(theta));
+                        y = OdometryHandler::instance()->getY() + ((distance) * sin(theta));
                         searchTry++;
                     }
-                } else if(searchTry == 1){
-                    // If second try, figure out what to do.
-                    stage = GPS_TARGET;
+                    if(searchTry % 2 == 0){
+                        distance+=0.25;
+                    }
+
+                    if(searchTry > 15){
+                        stage = GPS_TARGET;
+                    }
+
                 }
 
                 break;

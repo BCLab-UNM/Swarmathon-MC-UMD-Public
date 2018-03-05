@@ -119,7 +119,7 @@ namespace rqt_rover_gui {
     void centerUSEventHandler(const sensor_msgs::Range::ConstPtr& msg);
     void leftUSEventHandler(const sensor_msgs::Range::ConstPtr& msg);
     void rightUSEventHandler(const sensor_msgs::Range::ConstPtr& msg);
-    void IMUEventHandler(const sensor_msgs::Imu::ConstPtr& msg);
+    void IMUEventHandler(const nav_msgs::Odometry::ConstPtr& msg);
 
     void infoLogMessageEventHandler(const ros::MessageEvent<std_msgs::String const>& event);
     void diagLogMessageEventHandler(const ros::MessageEvent<std_msgs::String const>& event);

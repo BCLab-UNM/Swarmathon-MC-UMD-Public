@@ -31,6 +31,7 @@ void parseData(string data);
 std::string getHumanFriendlyTime();
 
 //Globals
+nav_msgs::Odometry offsetOdom;
 geometry_msgs::QuaternionStamped fingerAngle;
 geometry_msgs::QuaternionStamped wristAngle;
 sensor_msgs::Imu imu;
@@ -85,6 +86,7 @@ ros::Publisher infoLogPublisher;
 ros::Publisher heartbeatPublisher;
 
 ros::Publisher odomXY;
+ros::Publisher odomFilteredOffset;
 
 ros::Publisher encoderPublisher;
 
@@ -93,6 +95,9 @@ ros::Subscriber driveControlSubscriber;
 ros::Subscriber fingerAngleSubscriber;
 ros::Subscriber wristAngleSubscriber;
 ros::Subscriber modeSubscriber;
+ros::Subscriber IMUOffsetSubscriber;
+ros::Subscriber offsetSubscriber;
+ros::Subscriber odomFilteredSub;
 
 //Timers
 ros::Timer publishTimer;
@@ -101,6 +106,8 @@ ros::Timer publish_heartbeat_timer;
 //Callback handlers
 void publishHeartBeatTimerEventHandler(const ros::TimerEvent& event);
 void modeHandler(const std_msgs::UInt8::ConstPtr& message);
+void offsetHandler(const geometry_msgs::Quaternion& msg);
+void odomHandler(const nav_msgs::Odometry::ConstPtr& msg);
 
 int _left;
 int _right;
@@ -120,6 +127,16 @@ int left_v;
 int right_v;
 int corrected_v_left;
 int corrected_v_right;
+
+
+float curr_odom_x = 0;
+float curr_odom_y = 0;
+float odom_offset_x = 0;
+float odom_offset_y = 0;
+
+tf::Quaternion offset_quat = tf::createIdentityQuaternion();
+tf::Quaternion curr_quat = tf::createIdentityQuaternion();
+tf::Quaternion set_quat = tf::createIdentityQuaternion();
 
 DriveFix fix(&e_left, &e_right, &left_v, &right_v, &corrected_v_left, &corrected_v_right, 500);
 
@@ -158,6 +175,7 @@ int main(int argc, char **argv) {
     infoLogPublisher = aNH.advertise<std_msgs::String>("/infoLog", 1, true);
     heartbeatPublisher = aNH.advertise<std_msgs::String>((publishedName + "/abridge/heartbeat"), 1, true);
     encoderPublisher = aNH.advertise<geometry_msgs::Twist>((publishedName + "/encoders"), 10);
+    odomFilteredOffset = aNH.advertise<nav_msgs::Odometry>((publishedName + "/odom/filteredOffset"), 10);
 
     odomXY= aNH.advertise<nav_msgs::Odometry>((publishedName + "/odomXY"), 10);
 
@@ -165,6 +183,9 @@ int main(int argc, char **argv) {
     fingerAngleSubscriber = aNH.subscribe((publishedName + "/fingerAngle/cmd"), 1, fingerAngleHandler);
     wristAngleSubscriber = aNH.subscribe((publishedName + "/wristAngle/cmd"), 1, wristAngleHandler);
     modeSubscriber = aNH.subscribe((publishedName + "/mode"), 1, modeHandler);
+    odomFilteredSub = aNH.subscribe((publishedName + "/odom/filtered"), 1, odomHandler);
+
+    offsetSubscriber = aNH.subscribe((publishedName + "/odom/Offsets"), 1, offsetHandler);
 
 
     
@@ -297,6 +318,7 @@ void publishRosTopics() {
     sonarLeftPublish.publish(sonarLeft);
     sonarCenterPublish.publish(sonarCenter);
     sonarRightPublish.publish(sonarRight);
+    odomFilteredOffset.publish(offsetOdom);
 }
 
 void parseData(string str) {
@@ -352,14 +374,14 @@ void parseData(string str) {
 				odom.pose.pose.position.x += atof(dataSet.at(2).c_str()) / 100.0;
 				odom.pose.pose.position.y += atof(dataSet.at(3).c_str()) / 100.0;
 				odom.pose.pose.position.z = 0.0;
-				odom.pose.pose.orientation = tf::createQuaternionMsgFromYaw(atof(dataSet.at(4).c_str()));
+                odom.pose.pose.orientation = tf::createQuaternionMsgFromYaw(atof(dataSet.at(4).c_str()));
+
 				odom.twist.twist.linear.x = atof(dataSet.at(5).c_str()) / 100.0;
 				odom.twist.twist.linear.y = atof(dataSet.at(6).c_str()) / 100.0;
 				odom.twist.twist.angular.z = atof(dataSet.at(7).c_str());
 
-
-                odom_XY.pose.pose.position.x += atof(dataSet.at(10).c_str()) / 100.0;
-                odom_XY.pose.pose.position.y += atof(dataSet.at(11).c_str()) / 100.0;
+                odom_XY.pose.pose.position.x += (atof(dataSet.at(10).c_str()) / 100.0);
+                odom_XY.pose.pose.position.y += (atof(dataSet.at(11).c_str()) / 100.0);
                 odom_XY.pose.pose.position.z = 0.0;
                 odom_XY.pose.pose.orientation = tf::createQuaternionMsgFromYaw(atof(dataSet.at(4).c_str()));
                 odom_XY.twist.twist.linear.x = 0;
@@ -403,3 +425,52 @@ void publishHeartBeatTimerEventHandler(const ros::TimerEvent&) {
     msg.data = "";
     heartbeatPublisher.publish(msg);
 }
+
+void offsetHandler(const geometry_msgs::Quaternion& msg){
+    odom_offset_x = msg.x;
+    odom_offset_y = msg.y;
+
+    set_quat = tf::createQuaternionFromYaw(msg.z);
+    offset_quat = curr_quat*set_quat.inverse();
+    offset_quat.normalize();
+}
+
+void odomHandler(const nav_msgs::Odometry::ConstPtr& msg){
+    curr_odom_x = msg->pose.pose.position.x;
+    curr_odom_y = msg->pose.pose.position.y;
+
+    tf::quaternionMsgToTF(msg->pose.pose.orientation, curr_quat);
+
+
+
+    offsetOdom.pose= msg->pose;
+    offsetOdom.pose.pose.position.x -= odom_offset_x;
+    offsetOdom.pose.pose.position.y -= odom_offset_y;
+
+    tf::quaternionTFToMsg((curr_quat*offset_quat).normalize(), offsetOdom.pose.pose.orientation);
+
+    offsetOdom.twist = msg->twist;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

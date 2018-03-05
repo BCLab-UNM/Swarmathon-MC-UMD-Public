@@ -118,6 +118,7 @@ add_executable(
   src/behaviors/DropBehavior.cpp
   src/controllers/DriveController.cpp
   src/controllers/PID.cpp
+  src/controllers/OffsetController.cpp
   src/controllers/ClawController.cpp
   src/behaviors/SearchForDropBehavior.cpp
 )

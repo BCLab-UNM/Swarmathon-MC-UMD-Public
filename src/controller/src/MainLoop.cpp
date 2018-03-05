@@ -34,6 +34,9 @@
 
 #include "controllers/DriveController.h"
 #include "controllers/ClawController.h"
+#include "controllers/OffsetController.h"
+
+#include "message_filters/subscriber.h"
 
 using namespace std;
 
@@ -63,6 +66,7 @@ ros::Publisher heartbeatPublisher;
 ros::Publisher status_publisher;
 ros::Publisher fingerAnglePublish;
 ros::Publisher wristAnglePublish;
+ros::Publisher offsetPublish;
 
 //Subscribers
 ros::Subscriber modeSubscriber;
@@ -73,6 +77,8 @@ ros::Subscriber centerSonarSubscriber;
 ros::Subscriber rightSonarSubscriber;
 ros::Subscriber odometrySubscriber;
 ros::Subscriber encoderSubscriber;
+ros::Subscriber IMUSubscriber;
+ros::Subscriber odomFilteredFilter;
 
 
 //Times for ticking the stack
@@ -90,6 +96,8 @@ geometry_msgs::Twist velocity;
 bool stopped = true;
 
 bool collisionEnabled = false;
+
+bool init = false;
 
 
 
@@ -120,15 +128,18 @@ int main(int argc, char **argv) {
     nodeTest = nh.advertise<std_msgs::Int16>((publishedName + "/test"), 1, true);
     fingerAnglePublish = nh.advertise<std_msgs::Float32>((publishedName + "/fingerAngle/cmd"), 1, true);
     wristAnglePublish = nh.advertise<std_msgs::Float32>((publishedName + "/wristAngle/cmd"), 1, true);
+    offsetPublish = nh.advertise<geometry_msgs::Quaternion>((publishedName + "/odom/Offsets"), 1);
+
 
     modeSubscriber = nh.subscribe((publishedName + "/mode"), 1, modeHandler);
     joySubscriber = nh.subscribe((publishedName + "/joystick"), 10, joyCmdHandler);
     leftSonarSubscriber = nh.subscribe((publishedName + "/sonarLeft"), 10, &SonarHandler::handleLeft, SonarHandler::instance());
     centerSonarSubscriber = nh.subscribe((publishedName + "/sonarCenter"), 10, &SonarHandler::handleCenter, SonarHandler::instance());
     rightSonarSubscriber = nh.subscribe((publishedName + "/sonarRight"), 10, &SonarHandler::handleRight, SonarHandler::instance());
-    odometrySubscriber = nh.subscribe((publishedName + "/odom/filtered"), 10, &OdometryHandler::handle, OdometryHandler::instance());
+    odometrySubscriber = nh.subscribe((publishedName + "/odom/filteredOffset"), 10, &OdometryHandler::handle, OdometryHandler::instance());
     targetSubscriber = nh.subscribe((publishedName + "/targets"), 10, &TargetHandler::handle, TargetHandler::instance());
     encoderSubscriber = nh.subscribe((publishedName + "/encoders"), 10, &EncoderHandler::handle, EncoderHandler::instance());
+    IMUSubscriber = nh.subscribe((publishedName + "/imu"), 10, &IMUHandler::handle, IMUHandler::instance());
 
     //Timers to publish something.
     stateMachineTimer = nh.createTimer(ros::Duration(behaviourLoopTimeStep), tick);
@@ -138,7 +149,7 @@ int main(int argc, char **argv) {
     //register controllers
     DriveController::instance()->registerDrivePublisher(driveControlPublish);
     ClawController::instance()->registerPublishers(fingerAnglePublish, wristAnglePublish);
-
+    OffsetController::instance()->registerPublishers(offsetPublish);
 
     // Put the first behavior on stack
 
@@ -161,6 +172,15 @@ int main(int argc, char **argv) {
 
 void tick(const ros::TimerEvent&) {
     // To print log "tail -f path/"name of log file".txt | grep "TAG""
+    if(!init){
+        float theta = IMUHandler::instance()->theta;
+        float x = 0 + (0.5 * cos(theta)); //(remainingGoalDist * cos(oldGoalLocation.theta));
+        float y = 0 + (0.5 * sin(theta)); //(remainingGoalDist * sin(oldGoalLocation.theta));
+
+        OffsetController::instance()->sendOffsets(-x, -y, IMUHandler::instance()->w, IMUHandler::instance()->z);
+
+        init = true;
+    }
 
     // If mode is auto
     if (currentMode == 2 || currentMode == 3) {
@@ -169,6 +189,8 @@ void tick(const ros::TimerEvent&) {
             SonarHandler::instance()->setEnable(true);
             collisionEnabled = true;
         }
+
+
 
         // Tick the SMACS
         SMACS::instance()->tick();

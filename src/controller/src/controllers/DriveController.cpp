@@ -133,7 +133,7 @@ bool DriveController::goToLocation(float x, float y){
 
                 // goal not yet reached drive while maintaining proper heading.
                 if (fabs(errorYaw) < M_PI_2 &&  distance > waypointTolerance){
-                    fastPID((searchVelocity-linear) ,errorYaw, searchVelocity, currentLocation.theta);
+                    fastPID((searchVelocity-linear) ,0, searchVelocity, 0);
                 } else {
                     stop();
                     stateMachineState = STATE_MACHINE_ROTATE;
@@ -246,7 +246,7 @@ bool DriveController::goToDistance(float distance, float direction){
                 cout << "DRIVE: Distance: " << distanceToDrive << endl;
                 // goal not yet reached drive while maintaining proper heading.
                 if (fabs(errorYaw) < M_PI_2 &&  distanceToDrive > waypointTolerance){
-                    fastPID((searchVelocity-linear) ,errorYaw, searchVelocity, currentDrive.theta);
+                    fastPID((searchVelocity-linear) ,0, searchVelocity, 0);
                 } else {                   
                     // stopno change
                     stop();
