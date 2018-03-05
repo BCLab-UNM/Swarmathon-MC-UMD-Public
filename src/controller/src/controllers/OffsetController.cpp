@@ -14,12 +14,12 @@ void OffsetController::registerPublishers(ros::Publisher& offsetPublisher){
 
 
 void OffsetController::sendOffsets(float x, float y, float w, float z){
-    geometry_msgs::Twist msg;
-    msg.angular.x = x;
-    msg.angular.y = y;
+    geometry_msgs::Quaternion  msg;
+    msg.x = x;
+    msg.y = y;
 
-    msg.linear.x = w;
-    msg.linear.y = z;
+    msg.w = w;
+    msg.z = z;
 
     offsetPublisher.publish(msg);
 }

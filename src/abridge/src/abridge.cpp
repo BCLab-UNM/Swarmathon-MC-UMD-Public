@@ -106,7 +106,7 @@ ros::Timer publish_heartbeat_timer;
 //Callback handlers
 void publishHeartBeatTimerEventHandler(const ros::TimerEvent& event);
 void modeHandler(const std_msgs::UInt8::ConstPtr& message);
-void offsetHandler(const geometry_msgs::Twist::ConstPtr& msg);
+void offsetHandler(const geometry_msgs::Quaternion& msg);
 void odomHandler(const nav_msgs::Odometry::ConstPtr& msg);
 
 int _left;
@@ -128,18 +128,15 @@ int right_v;
 int corrected_v_left;
 int corrected_v_right;
 
-float curr_imu_w = 0;
-float curr_imu_z = 0;
-
-float imu_offset_w = 0;
-float imu_offset_z = 0;
-float prev_imu_offset_w = 0;
-float prev_imu_offset_z = 0;
 
 float curr_odom_x = 0;
 float curr_odom_y = 0;
 float odom_offset_x = 0;
 float odom_offset_y = 0;
+
+tf::Quaternion offset_quat = tf::createIdentityQuaternion();
+tf::Quaternion curr_quat = tf::createIdentityQuaternion();
+tf::Quaternion set_quat = tf::createIdentityQuaternion();
 
 DriveFix fix(&e_left, &e_right, &left_v, &right_v, &corrected_v_left, &corrected_v_right, 500);
 
@@ -429,34 +426,28 @@ void publishHeartBeatTimerEventHandler(const ros::TimerEvent&) {
     heartbeatPublisher.publish(msg);
 }
 
-void offsetHandler(const geometry_msgs::Twist::ConstPtr& msg){
-    odom_offset_x = curr_odom_x - msg->angular.x;
-    odom_offset_y = curr_odom_y - msg->angular.y;
+void offsetHandler(const geometry_msgs::Quaternion& msg){
+    odom_offset_x = msg.x;
+    odom_offset_y = msg.y;
 
-    imu_offset_w = msg->linear.x;
-    imu_offset_z = msg->linear.y;
+    set_quat = tf::createQuaternionFromYaw(msg.z);
+    offset_quat = curr_quat*set_quat.inverse();
+    offset_quat.normalize();
 }
 
 void odomHandler(const nav_msgs::Odometry::ConstPtr& msg){
     curr_odom_x = msg->pose.pose.position.x;
     curr_odom_y = msg->pose.pose.position.y;
-    curr_imu_w = msg->pose.pose.orientation.w;
-    curr_imu_z = msg->pose.pose.orientation.z;
 
-    imu_offset_w += msg->pose.pose.orientation.w - prev_imu_offset_w;
-    imu_offset_z += msg->pose.pose.orientation.z - prev_imu_offset_z;
+    tf::quaternionMsgToTF(msg->pose.pose.orientation, curr_quat);
 
-    prev_imu_offset_w = msg->pose.pose.orientation.w;
-    prev_imu_offset_z = msg->pose.pose.orientation.z;
+
 
     offsetOdom.pose= msg->pose;
     offsetOdom.pose.pose.position.x -= odom_offset_x;
     offsetOdom.pose.pose.position.y -= odom_offset_y;
 
-    offsetOdom.pose.pose.orientation.w = msg->pose.pose.orientation.w;
-    offsetOdom.pose.pose.orientation.z = imu_offset_z;
-    offsetOdom.pose.pose.orientation.x = msg->pose.pose.orientation.x;
-    offsetOdom.pose.pose.orientation.y = msg->pose.pose.orientation.y;
+    tf::quaternionTFToMsg((curr_quat*offset_quat).normalize(), offsetOdom.pose.pose.orientation);
 
     offsetOdom.twist = msg->twist;
 }
