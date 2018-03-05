@@ -186,7 +186,7 @@ void tick(const ros::TimerEvent&) {
     if (currentMode == 2 || currentMode == 3) {
     	// If sonar handler is not enables
         if(!collisionEnabled){
-            SonarHandler::instance()->setEnable(true);
+            //SonarHandler::instance()->setEnable(true);
             collisionEnabled = true;
         }
 
