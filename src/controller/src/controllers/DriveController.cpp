@@ -31,7 +31,7 @@ bool DriveController::goToLocation(float x, float y){
 
                 // Calculate the theta from our position to the desired position
                 // Where we should face to drive to where we want
-                currentDrive.theta = atan2(currentDrive.y - currentLocation.y, currentDrive.x - currentLocation.x);
+                // currentDrive.theta = atan2(currentDrive.y - currentLocation.y, currentDrive.x - currentLocation.x);
 
                 // Calculate the difference between current and desired heading in radians.
                 float errorYaw = angles::shortest_angular_distance(currentLocation.theta, currentDrive.theta);
@@ -81,7 +81,7 @@ bool DriveController::goToLocation(float x, float y){
                 // Calculate angle between currentLocation.theta and waypoints.front().theta
                 // Rotate left or right depending on sign of angle
                 // Stay in this state until angle is minimized
-                currentDrive.theta = atan2(currentDrive.y - currentLocation.y, currentDrive.x - currentLocation.x);
+
 
                 // Calculate the difference between current and desired heading in radians.
                 float errorYaw = angles::shortest_angular_distance(currentLocation.theta, currentDrive.theta);
@@ -177,7 +177,7 @@ bool DriveController::goToDistance(float distance, float direction){
                 // Calculate angle between currentLocation.theta and waypoints.front().theta
                 // Rotate left or right depending on sign of angle
                 // Stay in this state until angle is minimized
-                currentDrive.theta = atan2(currentDrive.y - currentLocation.y, currentDrive.x - currentLocation.x);
+                //currentDrive.theta = atan2(currentDrive.y - currentLocation.y, currentDrive.x - currentLocation.x);
 
                 // Calculate the diffrence between current and desired heading in radians.
                 float errorYaw = angles::shortest_angular_distance(currentLocation.theta, currentDrive.theta);
@@ -204,7 +204,7 @@ bool DriveController::goToDistance(float distance, float direction){
                 // Calculate angle between currentLocation.theta and waypoints.front().theta
                 // Rotate left or right depending on sign of angle
                 // Stay in this state until angle is minimized
-                currentDrive.theta = atan2(currentDrive.y - currentLocation.y, currentDrive.x - currentLocation.x);
+                //currentDrive.theta = atan2(currentDrive.y - currentLocation.y, currentDrive.x - currentLocation.x);
 
                 // Calculate the diffrence between current and desired heading in radians.
                 float errorYaw = angles::shortest_angular_distance(currentLocation.theta, currentDrive.theta);
@@ -319,6 +319,7 @@ void DriveController::resetDriveController(float x, float y){
     stateMachineState = STATE_MACHINE_ROTATE;
     currentDrive.x = x;
     currentDrive.y = y;
+    currentDrive.theta = atan2(currentDrive.y - OdometryHandler::instance()->getY(), currentDrive.x - OdometryHandler::instance()->getX());
     sendDriveCommand(left, right);
 }
 

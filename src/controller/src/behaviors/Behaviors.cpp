@@ -5,7 +5,7 @@
 //==============================================SimpleBehavior=================================================//
 
 bool TestTurn::tick(){
-    if(DriveController::instance()->goToLocation(x, y)){
+    if(DriveController::instance()->goToDistance(0.5, theta)){
         theta = OdometryHandler::instance()->getTheta() + M_PI_2;
         float distance = 0.5;
         x = OdometryHandler::instance()->getX() + ((distance) * cos(theta));
