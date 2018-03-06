@@ -16,6 +16,15 @@
 #include "../controllers/ClawController.h"
 #include "std_msgs/Float32.h"
 
+class TestTurn : public Behavior{
+    float theta, x, y;
+
+public:
+
+    TestTurn():Behavior(SEARCH_BEHAVIOR_TYPE){}
+    bool tick();
+};
+
 
 #endif
 
