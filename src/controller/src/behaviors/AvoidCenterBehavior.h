@@ -6,6 +6,7 @@
 #include <vector>
 #include "../controllers/DriveController.h"
 #include "../handlers/Handlers.h"
+#include <iostream>
 
 using namespace std;
 
@@ -23,7 +24,6 @@ class AvoidCenterBehavior : public Behavior{
     float camera_offset_correction = 0.020; //meters;
 
     bool turnLock = false;
-    bool isLeftTurn = false;
 
     float x, y, theta;
     float driveSpeed = 50;

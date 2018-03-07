@@ -5,11 +5,12 @@ bool AvoidCenterBehavior::tick(){
         case WAIT:
         {
             //disable sonar for the drive back to safe distance
-            SonarHandler::instance()->setEnable(false);
             // stop rover
             DriveController::instance()->sendDriveCommand(0, 0);
             // check if we see center tags
             if(TargetHandler::instance()->getNumberOfCenterTagsSeen() > 0){
+                cout << "AVOIDCENTER: " << "See center"<<endl;
+                SonarHandler::instance()->setEnable(false);
 //                vector <Tag> tags = TargetHandler::instance()->getCenterTags();
 //                for ( auto & tag : tags ) {
 //                    cout << "AVOIDCENTER: yaw: "<< tag.calcYaw() << " pitch: "<<tag.calcPitch() << " roll : " << tag.calcRoll() << endl;
@@ -31,6 +32,7 @@ bool AvoidCenterBehavior::tick(){
             float currX = OdometryHandler::instance()->getX();
             float currY = OdometryHandler::instance()->getY();
             float distance = hypot(x - currX, y - currY);
+            cout << "AVOIDCENTER: " << "distance drove back"<< distance <<endl;
             if(distance < 0.2){
                 //drive back 0.4 meters. safe distance
                 DriveController::instance()->sendDriveCommand(-driveSpeed, -driveSpeed);
@@ -52,12 +54,15 @@ bool AvoidCenterBehavior::tick(){
             // turn 45 degrees
             if(!turnLock){
                 if(checkForCollectionZoneTags(centerTags) < 0){
+                    cout << "AVOIDCENTER: " << "Turning right"<<endl;
                     theta += M_PI_4;
                 } else {
+                    cout << "AVOIDCENTER: " << "Turning left"<<endl;
                     theta -= M_PI_4;
                 }
                 turnLock = true;
             }
+
 
             if(DriveController::instance()->turnToTheta(theta)){
                 stage = DRIVE;
@@ -74,10 +79,12 @@ bool AvoidCenterBehavior::tick(){
             if(TargetHandler::instance()->getNumberOfCenterTagsSeen() > 0){
                 stage = WAIT;
             } else {
+
                 float currX = OdometryHandler::instance()->getX();
                 float currY = OdometryHandler::instance()->getY();
                 float distance = hypot(x - currX, y - currY);
                 if(distance < 0.4){
+                     cout << "AVOIDCENTER: " << "distance drove back"<< distance <<endl;
                      DriveController::instance()->sendDriveCommand(driveSpeed, driveSpeed);
                 } else {
                     return true;
@@ -86,8 +93,8 @@ bool AvoidCenterBehavior::tick(){
             break;
         }
 
-        return false;
     }
+    return false;
 }
 
 
