@@ -422,14 +422,12 @@ void offsetHandler(const geometry_msgs::Quaternion& msg){
     char cmd[16]={'\0'};
     sprintf(cmd, "o,%.4g\n", yaw);
     usb.sendData(cmd);
+    memset(&cmd, '\0', sizeof (cmd));
 
-    char cmdx[16]={'\0'};
-    sprintf(cmdx, "x,%.4g\n", msg.x);
-    usb.sendData(cmdx);
-
-    char cmdy[16]={'\0'};
-    sprintf(cmdy, "y,%.4g\n", msg.y);
-    usb.sendData(cmdy);
+    char cmdxy[32]={'\0'};
+    sprintf(cmdxy, "xy,%.4g,%.4g\n", msg.x, msg.y);
+    usb.sendData(cmdxy);
+    memset(&cmdxy, '\0', sizeof (cmdxy));
 }
 
 
