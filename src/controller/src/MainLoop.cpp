@@ -199,7 +199,6 @@ void tick(const ros::TimerEvent&) {
         //Flag that states that robot is in auto
         stopped = false;
     } else {    //manual
-        init = false;
    		// If robot is not stopped
         if(!stopped){
         	// Stop robot
