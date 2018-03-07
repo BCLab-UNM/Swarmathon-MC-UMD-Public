@@ -378,7 +378,7 @@ void parseData(string str) {
 
 				odom.twist.twist.linear.x = atof(dataSet.at(5).c_str()) / 100.0;
 				odom.twist.twist.linear.y = atof(dataSet.at(6).c_str()) / 100.0;
-				odom.twist.twist.angular.z = atof(dataSet.at(7).c_str());
+                odom.twist.twist.angular.z = atof(dataSet.at(7).c_str());
 
                 odom_XY.pose.pose.position.x += (atof(dataSet.at(10).c_str()) / 100.0);
                 odom_XY.pose.pose.position.y += (atof(dataSet.at(11).c_str()) / 100.0);
@@ -427,27 +427,27 @@ void publishHeartBeatTimerEventHandler(const ros::TimerEvent&) {
 }
 
 void offsetHandler(const geometry_msgs::Quaternion& msg){
-    odom_offset_x = msg.x;
-    odom_offset_y = msg.y;
+    tf::Quaternion q(0.0, 0.0, msg.z, msg.w);
+    tf::Matrix3x3 m(q);
+    double roll, pitch, yaw;
+    m.getRPY(roll, pitch, yaw);
 
-    set_quat = tf::createQuaternionFromYaw(msg.z);
-    offset_quat = curr_quat*set_quat.inverse();
-    offset_quat.normalize();
+    char cmd[16]={'\0'};
+    sprintf(cmd, "o,%.4g\n", yaw);
+    usb.sendData(cmd);
+    memset(&cmd, '\0', sizeof (cmd));
+
+    odom_offset_x = curr_odom_x - msg.x;
+    odom_offset_y = curr_odom_y - msg.y;
 }
 
 void odomHandler(const nav_msgs::Odometry::ConstPtr& msg){
     curr_odom_x = msg->pose.pose.position.x;
     curr_odom_y = msg->pose.pose.position.y;
 
-    tf::quaternionMsgToTF(msg->pose.pose.orientation, curr_quat);
-
-
-
     offsetOdom.pose= msg->pose;
     offsetOdom.pose.pose.position.x -= odom_offset_x;
     offsetOdom.pose.pose.position.y -= odom_offset_y;
-
-    tf::quaternionTFToMsg((curr_quat*offset_quat).normalize(), offsetOdom.pose.pose.orientation);
 
     offsetOdom.twist = msg->twist;
 }
