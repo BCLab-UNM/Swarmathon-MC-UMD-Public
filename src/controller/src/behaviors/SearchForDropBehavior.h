@@ -12,6 +12,7 @@
 class SearchForDropBehavior : public Behavior{
     enum Stages{
         ODOM_TARGET = 0,
+        TURN_TO_THETA,
         SEARCH_FOR_CENTER,
         GPS_TARGET,
         SEARCH,

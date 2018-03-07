@@ -21,6 +21,12 @@ void OffsetController::sendOffsets(float x, float y, float w, float z){
     msg.w = w;
     msg.z = z;
 
+    tf::Quaternion q(0, 0, z, w);
+    tf::Matrix3x3 m(q);
+    double roll, pitch, yaw;
+    m.getRPY(roll, pitch, yaw);
+    DriveController::instance()->setResetTheta(yaw);
+
     offsetPublisher.publish(msg);
 }
 

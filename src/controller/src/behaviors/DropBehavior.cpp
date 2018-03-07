@@ -41,7 +41,6 @@ bool DropBehavior::tick(){
             y = OdometryHandler::instance()->getY();
 
             OffsetController::instance()->sendOffsets(0, 0, IMUHandler::instance()->w, IMUHandler::instance()->z);
-
             break;
         }
         case DRIVE_BACK:

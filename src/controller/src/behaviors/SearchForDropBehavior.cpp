@@ -11,13 +11,23 @@ bool SearchForDropBehavior::tick(){
             {
                 TargetHandler::instance()->setEnabled(false);
                 if(DriveController::instance()->goToLocation(0, 0)){
-                    stage = SEARCH_FOR_CENTER;
+                    stage = TURN_TO_THETA;
                     theta = OdometryHandler::instance()->getTheta();
                     x = OdometryHandler::instance()->getX() + ((distance) * cos(theta));
                     y = OdometryHandler::instance()->getY() + ((distance) * sin(theta));
                 }
 
 
+                break;
+            }
+            case TURN_TO_THETA:
+            {
+                if(DriveController::instance()->turnToTheta(DriveController::instance()->getResetTheta())){
+                    stage = SEARCH_FOR_CENTER;
+                    theta = OdometryHandler::instance()->getTheta();
+                    x = OdometryHandler::instance()->getX() + ((distance) * cos(theta));
+                    y = OdometryHandler::instance()->getY() + ((distance) * sin(theta));
+                }
                 break;
             }
             case SEARCH_FOR_CENTER:
