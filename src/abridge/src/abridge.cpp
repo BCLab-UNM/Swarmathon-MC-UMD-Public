@@ -431,7 +431,6 @@ void offsetHandler(const geometry_msgs::Quaternion& msg){
     tf::Matrix3x3 m(q);
     double roll, pitch, yaw;
     m.getRPY(roll, pitch, yaw);
-    yaw += M_PI;
 
     char cmd[16]={'\0'};
     sprintf(cmd, "o,%.4g\n", yaw);
