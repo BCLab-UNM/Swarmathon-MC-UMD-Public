@@ -21,6 +21,7 @@
 #include "../behaviors/AvoidBehavior.h"
 #include "../behaviors/PickUpBehavior.h"
 #include "../behaviors/DropBehavior.h"
+#include "../behaviors/AvoidCenterBehavior.h"
 
 #include <mutex>
 
