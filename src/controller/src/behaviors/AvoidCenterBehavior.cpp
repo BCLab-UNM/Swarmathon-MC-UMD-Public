@@ -11,6 +11,7 @@ bool AvoidCenterBehavior::tick(){
             if(TargetHandler::instance()->getNumberOfCenterTagsSeen() > 0){
                 cout << "AVOIDCENTER: " << "See center"<<endl;
                 SonarHandler::instance()->setEnable(false);
+                TargetHandler::instance()->setEnabled(false);
 //                vector <Tag> tags = TargetHandler::instance()->getCenterTags();
 //                for ( auto & tag : tags ) {
 //                    cout << "AVOIDCENTER: yaw: "<< tag.calcYaw() << " pitch: "<<tag.calcPitch() << " roll : " << tag.calcRoll() << endl;
@@ -70,6 +71,7 @@ bool AvoidCenterBehavior::tick(){
                 x = OdometryHandler::instance()->getX();
                 y = OdometryHandler::instance()->getY();
                 theta = OdometryHandler::instance()->getTheta();
+                TargetHandler::instance()->setEnabled(true);
             }
 
             break;
