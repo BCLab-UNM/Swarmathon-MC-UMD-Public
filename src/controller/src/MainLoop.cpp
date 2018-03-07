@@ -172,18 +172,7 @@ int main(int argc, char **argv) {
 
 void tick(const ros::TimerEvent&) {
     // To print log "tail -f path/"name of log file".txt | grep "TAG""
-//    if(!init){
-//        float theta = IMUHandler::instance()->theta;
-//        float x = 0 + (0.5 * cos(theta)); //(remainingGoalDist * cos(oldGoalLocation.theta));
-//        float y = 0 + (0.5 * sin(theta)); //(remainingGoalDist * sin(oldGoalLocation.theta));
-
-//        OffsetController::instance()->sendOffsets(-x, -y, IMUHandler::instance()->w, IMUHandler::instance()->z);
-
-//        init = true;
-//    }
-
-    // If mode is auto
-    if (currentMode == 2 || currentMode == 3) {
+    if(!init){
         float theta = IMUHandler::instance()->theta;
         float x = 0 + (0.5 * cos(theta)); //(remainingGoalDist * cos(oldGoalLocation.theta));
         float y = 0 + (0.5 * sin(theta)); //(remainingGoalDist * sin(oldGoalLocation.theta));
@@ -191,6 +180,10 @@ void tick(const ros::TimerEvent&) {
         OffsetController::instance()->sendOffsets(-x, -y, IMUHandler::instance()->w, IMUHandler::instance()->z);
 
         init = true;
+    }
+
+    // If mode is auto
+    if (currentMode == 2 || currentMode == 3) {
     	// If sonar handler is not enables
         if(!collisionEnabled){
             SonarHandler::instance()->setEnable(true);
@@ -200,7 +193,7 @@ void tick(const ros::TimerEvent&) {
 
 
         // Tick the SMACS
-        //SMACS::instance()->tick();
+        SMACS::instance()->tick();
 
 
         //Flag that states that robot is in auto
