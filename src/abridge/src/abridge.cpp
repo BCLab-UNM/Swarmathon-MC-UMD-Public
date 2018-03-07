@@ -424,10 +424,9 @@ void offsetHandler(const geometry_msgs::Quaternion& msg){
     usb.sendData(cmd);
     memset(&cmd, '\0', sizeof (cmd));
 
-    char cmdxy[32]={'\0'};
-    sprintf(cmdxy, "xy,%.4g,%.4g\n", msg.x, msg.y);
-    usb.sendData(cmdxy);
-    memset(&cmdxy, '\0', sizeof (cmdxy));
+    odom_XY.pose.pose.position.x = msg.x;
+    odom_XY.pose.pose.position.y = msg.y;
+    odomXY.publish(odom_XY);
 }
 
 
