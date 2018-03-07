@@ -12,6 +12,7 @@ using namespace std;
 class AvoidCenterBehavior : public Behavior{
     enum Stage{
         WAIT = 0,
+        DRIVEBACK,
         TURN,
         DRIVE
     };
@@ -23,6 +24,9 @@ class AvoidCenterBehavior : public Behavior{
 
     bool turnLock = false;
     bool isLeftTurn = false;
+
+    float x, y, theta;
+    float driveSpeed = 50;
 
     vector<Tag> centerTags;
 
