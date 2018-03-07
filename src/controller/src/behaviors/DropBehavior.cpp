@@ -40,7 +40,7 @@ bool DropBehavior::tick(){
             x = OdometryHandler::instance()->getX();
             y = OdometryHandler::instance()->getY();
 
-            OffsetController::instance()->sendOffsets(x, y, IMUHandler::instance()->w, IMUHandler::instance()->z);
+            OffsetController::instance()->sendOffsets(0, 0, IMUHandler::instance()->w, IMUHandler::instance()->z);
 
             break;
         }
