@@ -436,6 +436,12 @@ void offsetHandler(const geometry_msgs::Quaternion& msg){
     tf::Matrix3x3 m(q);
     double roll, pitch, yaw;
     m.getRPY(roll, pitch, yaw);
+
+    char cmd[16]={'\0'};
+    sprintf(cmd, "o,%.4g\n", yaw);
+    usb.sendData(cmd);
+    memset(&cmd, '\0', sizeof (cmd));
+
     set_quat = tf::createQuaternionFromRPY(roll, pitch, yaw);
 
     offset_quat = curr_quat*set_quat.inverse();
