@@ -193,13 +193,13 @@ void tick(const ros::TimerEvent&) {
 
 
         // Tick the SMACS
-        SMACS::instance()->tick();
+        //SMACS::instance()->tick();
 
 
         //Flag that states that robot is in auto
         stopped = false;
     } else {    //manual
-
+        init = false;
    		// If robot is not stopped
         if(!stopped){
         	// Stop robot
