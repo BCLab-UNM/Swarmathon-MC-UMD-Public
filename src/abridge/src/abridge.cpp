@@ -430,9 +430,16 @@ void offsetHandler(const geometry_msgs::Quaternion& msg){
     odom_offset_x = msg.x;
     odom_offset_y = msg.y;
 
-    set_quat = tf::createQuaternionFromYaw(msg.z);
+
+
+    tf::Quaternion q(0.0, 0.0, msg.z, msg.w);
+    tf::Matrix3x3 m(q);
+    double roll, pitch, yaw;
+    m.getRPY(roll, pitch, yaw);
+    set_quat = tf::createQuaternionFromRPY(roll, pitch, yaw);
+
     offset_quat = curr_quat*set_quat.inverse();
-    //offset_quat.normalize();
+    offset_quat.normalize();
 }
 
 void odomHandler(const nav_msgs::Odometry::ConstPtr& msg){
@@ -447,7 +454,9 @@ void odomHandler(const nav_msgs::Odometry::ConstPtr& msg){
     offsetOdom.pose.pose.position.x -= odom_offset_x;
     offsetOdom.pose.pose.position.y -= odom_offset_y;
 
-    tf::quaternionTFToMsg((curr_quat*offset_quat), offsetOdom.pose.pose.orientation);
+    //tf::quaternionTFToMsg((curr_quat*offset_quat.inverse()).normalize(), offsetOdom.pose.pose.orientation);
+    tf::quaternionTFToMsg(set_quat, offsetOdom.pose.pose.orientation);
+
 
     offsetOdom.twist = msg->twist;
 }
