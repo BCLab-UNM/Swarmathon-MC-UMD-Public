@@ -4,6 +4,8 @@ bool AvoidCenterBehavior::tick(){
     switch(stage){
         case WAIT:
         {
+            //disable sonar for the drive back to safe distance
+            SonarHandler::instance()->setEnable(false);
             // stop rover
             DriveController::instance()->sendDriveCommand(0, 0);
             // check if we see center tags
@@ -37,6 +39,7 @@ bool AvoidCenterBehavior::tick(){
                 x = OdometryHandler::instance()->getX();
                 y = OdometryHandler::instance()->getY();
                 theta = OdometryHandler::instance()->getTheta();
+                SonarHandler::instance()->setEnable(true);
             }
 
             break;
