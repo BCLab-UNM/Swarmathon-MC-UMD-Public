@@ -86,7 +86,7 @@ ros::Publisher infoLogPublisher;
 ros::Publisher heartbeatPublisher;
 
 ros::Publisher odomXY;
-
+ros::Publisher odomFilteredOffset;
 
 ros::Publisher encoderPublisher;
 
@@ -97,6 +97,7 @@ ros::Subscriber wristAngleSubscriber;
 ros::Subscriber modeSubscriber;
 ros::Subscriber IMUOffsetSubscriber;
 ros::Subscriber offsetSubscriber;
+ros::Subscriber odomFilteredSub;
 
 //Timers
 ros::Timer publishTimer;
@@ -106,6 +107,7 @@ ros::Timer publish_heartbeat_timer;
 void publishHeartBeatTimerEventHandler(const ros::TimerEvent& event);
 void modeHandler(const std_msgs::UInt8::ConstPtr& message);
 void offsetHandler(const geometry_msgs::Quaternion& msg);
+void odomHandler(const nav_msgs::Odometry::ConstPtr& msg);
 
 int _left;
 int _right;
@@ -126,6 +128,15 @@ int right_v;
 int corrected_v_left;
 int corrected_v_right;
 
+
+float curr_odom_x = 0;
+float curr_odom_y = 0;
+float odom_offset_x = 0;
+float odom_offset_y = 0;
+
+tf::Quaternion offset_quat = tf::createIdentityQuaternion();
+tf::Quaternion curr_quat = tf::createIdentityQuaternion();
+tf::Quaternion set_quat = tf::createIdentityQuaternion();
 
 DriveFix fix(&e_left, &e_right, &left_v, &right_v, &corrected_v_left, &corrected_v_right, 500);
 
@@ -164,6 +175,7 @@ int main(int argc, char **argv) {
     infoLogPublisher = aNH.advertise<std_msgs::String>("/infoLog", 1, true);
     heartbeatPublisher = aNH.advertise<std_msgs::String>((publishedName + "/abridge/heartbeat"), 1, true);
     encoderPublisher = aNH.advertise<geometry_msgs::Twist>((publishedName + "/encoders"), 10);
+    odomFilteredOffset = aNH.advertise<nav_msgs::Odometry>((publishedName + "/odom/filteredOffset"), 10);
 
     odomXY= aNH.advertise<nav_msgs::Odometry>((publishedName + "/odomXY"), 10);
 
@@ -171,6 +183,7 @@ int main(int argc, char **argv) {
     fingerAngleSubscriber = aNH.subscribe((publishedName + "/fingerAngle/cmd"), 1, fingerAngleHandler);
     wristAngleSubscriber = aNH.subscribe((publishedName + "/wristAngle/cmd"), 1, wristAngleHandler);
     modeSubscriber = aNH.subscribe((publishedName + "/mode"), 1, modeHandler);
+    odomFilteredSub = aNH.subscribe((publishedName + "/odom/filtered"), 1, odomHandler);
 
     offsetSubscriber = aNH.subscribe((publishedName + "/odom/Offsets"), 1, offsetHandler);
 
@@ -305,6 +318,7 @@ void publishRosTopics() {
     sonarLeftPublish.publish(sonarLeft);
     sonarCenterPublish.publish(sonarCenter);
     sonarRightPublish.publish(sonarRight);
+    odomFilteredOffset.publish(offsetOdom);
 }
 
 void parseData(string str) {
@@ -364,7 +378,7 @@ void parseData(string str) {
 
 				odom.twist.twist.linear.x = atof(dataSet.at(5).c_str()) / 100.0;
 				odom.twist.twist.linear.y = atof(dataSet.at(6).c_str()) / 100.0;
-				odom.twist.twist.angular.z = atof(dataSet.at(7).c_str());
+                odom.twist.twist.angular.z = atof(dataSet.at(7).c_str());
 
                 odom_XY.pose.pose.position.x += (atof(dataSet.at(10).c_str()) / 100.0);
                 odom_XY.pose.pose.position.y += (atof(dataSet.at(11).c_str()) / 100.0);
@@ -424,11 +438,20 @@ void offsetHandler(const geometry_msgs::Quaternion& msg){
     usb.sendData(cmd);
     memset(&cmd, '\0', sizeof (cmd));
 
-    odom_XY.pose.pose.position.x = msg.x;
-    odom_XY.pose.pose.position.y = msg.y;
-    odomXY.publish(odom_XY);
+    odom_offset_x = curr_odom_x - msg.x;
+    odom_offset_y = curr_odom_y - msg.y;
 }
 
+void odomHandler(const nav_msgs::Odometry::ConstPtr& msg){
+    curr_odom_x = msg->pose.pose.position.x;
+    curr_odom_y = msg->pose.pose.position.y;
+
+    offsetOdom.pose= msg->pose;
+    offsetOdom.pose.pose.position.x -= odom_offset_x;
+    offsetOdom.pose.pose.position.y -= odom_offset_y;
+
+    offsetOdom.twist = msg->twist;
+}
 
 
 
