@@ -242,7 +242,7 @@ void TargetHandler::handle(const apriltags_ros::AprilTagDetectionArray::ConstPtr
         }
 
         // if handler is on and we see a center tag
-        if (isHandlerOn && !hasCube && centerTagsList.size() > 0){
+        if (!hasCube && centerTagsList.size() > 0){
             // Avoid center behavior
             SMACS::instance()->pushWithMutex(new AvoidCenterBehavior);
             cout << "TARGETHANDLE: center tag seen avoid is on"<<endl;
