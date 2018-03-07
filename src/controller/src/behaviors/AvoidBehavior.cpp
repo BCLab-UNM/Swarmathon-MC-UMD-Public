@@ -10,6 +10,7 @@ bool AvoidBehavior::tick(){
     switch (stage) {
         case WAIT:
         {
+            TargetHandler::instance()->setEnabled(true);
             cout<<"AVOID: waiting"<<endl;
             //if we haven't started counting the time, start
             if(!isTimeInit){

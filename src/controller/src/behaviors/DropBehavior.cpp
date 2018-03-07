@@ -46,6 +46,7 @@ bool DropBehavior::tick(){
         }
         case DRIVE_BACK:
         {
+            TargetHandler::instance()->setEnabled(false);
             //Drive back a meter
             double currX= OdometryHandler::instance()->getX();
             double currY = OdometryHandler::instance()->getY();
