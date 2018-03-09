@@ -17,12 +17,22 @@ echo Killing rosmaster
 pkill rosmaster
 echo Killing roscore
 pkill roscore
+echo Killing hive
+pkill hive
+
 roscore &
 sleep 2
+echo Roscore up
+
+echo Hive up
+nohup > misc/logs/"hive_log.txt" rosrun hive hive &
+
 rqt -s rqt_rover_gui
 # The rover program cleans up after itself but if there is a crash this helps to make sure there are no leftovers
 echo Cleaning up ROS and Gazebo Processes
 rosnode kill -a 
+echo Killing hive
+pkill hive
 echo Killing rosmaster
 pkill rosmaster
 echo Killing roscore
