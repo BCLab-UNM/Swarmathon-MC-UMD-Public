@@ -1,18 +1,13 @@
 <?xml version="1.0"?>
 <package>
   <name>controller</name>
-  <version>0.0.0</version>
+  <version>0.1.0</version>
   <description>The controller package</description>
 
-  <maintainer email="dennisfedorchuk@gmail.com">Dennis Fedorchuk</maintainer>
+  <maintainer email="dennisfedorchuk@gmail.com">Dennis Fedorchuk</maintainer>s
 
   <license>MIT</license>
 
-
-  <!-- Maybe put our website here -->
-  <!-- <url type="website">http://wiki.ros.org/controller</url> -->
-
-  <author email="jane.doe@example.com">Jane Doe</author>
 
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>geometry_msgs</build_depend>
@@ -23,6 +18,9 @@
   <build_depend>tf</build_depend>
   <build_depend>apriltags_ros</build_depend>
   <build_depend>swarmie_msgs</build_depend>
+  <build_depend>hive_srv</build_depend>
+
+
 
   <run_depend>geometry_msgs</run_depend>
   <run_depend>roscpp</run_depend>
@@ -32,6 +30,7 @@
   <run_depend>tf</run_depend>
   <run_depend>apriltags_ros</run_depend>
   <run_depend>swarmie_msgs</run_depend>
+  <run_depend>hive_srv</run_depend>
 
 
   <export>

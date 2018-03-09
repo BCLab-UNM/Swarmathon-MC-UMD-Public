@@ -4,7 +4,7 @@
   <version>0.2.0</version>
   <description>The hive package</description>
 
-  <maintainer email="denysfedorchuk@gmail.com">Denyss Fedorchuk</maintainer>
+  <maintainer email="denysfedorchuk@gmail.com">Denys Fedorchuk</maintainer>
 
   <license>MIT</license>
 
@@ -16,6 +16,9 @@
   <exec_depend>message_runtime</exec_depend>
   <build_depend>std_msgs</build_depend>
   <exec_depend>std_msgs</exec_depend>
+   <build_depend>hive_srv</build_depend>
+   <build_export_depend>hive_srv</build_export_depend>
+   <exec_depend>hive_srv</exec_depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->
