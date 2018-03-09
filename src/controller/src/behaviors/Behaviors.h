@@ -8,6 +8,7 @@
 #include "AvoidBehavior.h"
 #include "PickUpBehavior.h"
 #include "DriveBehavior.h"
+#include "SearchAlgorithm.h"
 
 #include "ros/ros.h"
 #include "../controllers/DriveController.h"
