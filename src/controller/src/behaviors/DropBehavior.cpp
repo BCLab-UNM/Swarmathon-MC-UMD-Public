@@ -40,12 +40,12 @@ bool DropBehavior::tick(){
             x = OdometryHandler::instance()->getX();
             y = OdometryHandler::instance()->getY();
 
-            OffsetController::instance()->sendOffsets(x, y, IMUHandler::instance()->w, IMUHandler::instance()->z);
-
+            OffsetController::instance()->sendOffsets(0, 0, IMUHandler::instance()->w, IMUHandler::instance()->z);
             break;
         }
         case DRIVE_BACK:
         {
+            TargetHandler::instance()->setEnabled(false);
             //Drive back a meter
             double currX= OdometryHandler::instance()->getX();
             double currY = OdometryHandler::instance()->getY();

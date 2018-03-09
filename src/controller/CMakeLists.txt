@@ -121,6 +121,7 @@ add_executable(
   src/controllers/OffsetController.cpp
   src/controllers/ClawController.cpp
   src/behaviors/SearchForDropBehavior.cpp
+  src/behaviors/AvoidCenterBehavior.cpp
 )
 
 add_dependencies(controller ${catkin_EXPORTED_TARGETS})

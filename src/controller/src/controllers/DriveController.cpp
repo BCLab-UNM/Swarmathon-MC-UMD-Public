@@ -280,23 +280,36 @@ bool DriveController::turnToTheta(float theta){
     // Calculate angle between currentLocation.theta and waypoints.front().theta
     // Rotate left or right depending on sign of angle
     // Stay in this state until angle is minimized
-    float currentTheta = OdometryHandler::instance()->getTheta();
+    float currTheta = OdometryHandler::instance()->getTheta();
 
-    // Calculate the diffrence between current and desired heading in radians.
-    float errorYaw = angles::shortest_angular_distance(currentTheta, theta);
+    // Calculate the difference between current and desired heading in radians.
+    float errorYaw = angles::shortest_angular_distance(currTheta, theta);
 
     //Calculate absolute value of angle
-    float abs_error = fabs(errorYaw);
+    float abs_error = fabs(angles::shortest_angular_distance(currTheta, theta));
 
-    // If angle > rotateOnlyAngleTolerance radians rotate but dont drive forward.
-    if (abs_error > rotateOnlyAngleTolerance){
-        slowPID(0.0, errorYaw, 0.0, theta);
+    // If we have not completed the turn
+    // TODO: This needs fixing because there might be a case where we overshoot
+    if(abs_error >= finalRotationTolerance){
+        cout << "DRIVE: correction angle: " << abs_error<<endl;
+        //find out if left or right
+        //if need to turn right
+        if (errorYaw < 0){
+            cout << "DRIVE: RightMin: "<<rightMin<<endl;
+            sendDriveCommand(leftMin, -rightMin);
+            left = leftMin;
+            right = -rightMin;
+        } else {
+            cout << "DRIVE: LeftMin: " << leftMin <<endl;
+            sendDriveCommand(-leftMin, rightMin);
+            left = -leftMin;
+            right = rightMin;
+        }
+
+        return false;
     } else {
-        //stop
-        stop();
         return true;
     }
-    return false;
 }
 
 

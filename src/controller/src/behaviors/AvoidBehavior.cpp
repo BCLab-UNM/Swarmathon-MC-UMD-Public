@@ -10,6 +10,7 @@ bool AvoidBehavior::tick(){
     switch (stage) {
         case WAIT:
         {
+            TargetHandler::instance()->setEnabled(true);
             cout<<"AVOID: waiting"<<endl;
             //if we haven't started counting the time, start
             if(!isTimeInit){
@@ -78,6 +79,7 @@ bool AvoidBehavior::tick(){
                     }else{
                         //else center is 1 meter clear. we can drive forward
                         DriveController::instance()->stop();
+                        directionToDrive = OdometryHandler::instance()->getTheta();
                         stage = DRIVE;
                         turnLock = false;
                         switchTurnCount = 0;

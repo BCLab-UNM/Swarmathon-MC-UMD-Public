@@ -66,6 +66,8 @@ class DriveController{
     float direction;
     float distance;
 
+    float resetTheta;
+
     DriveController(){
         stateMachineState = STATE_MACHINE_ROTATE;
         fastVelPID.SetConfiguration(fastVelConfig());
@@ -153,6 +155,9 @@ class DriveController{
 
         // get right wheel min
         double getRightMin(){return rightMin;}
+
+        void setResetTheta(float theta){this->resetTheta = theta;}
+        float getResetTheta(){return resetTheta;}
 
 
 };
