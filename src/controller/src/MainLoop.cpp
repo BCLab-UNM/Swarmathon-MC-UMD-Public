@@ -35,6 +35,7 @@
 #include "controllers/DriveController.h"
 #include "controllers/ClawController.h"
 #include "controllers/OffsetController.h"
+#include "controllers/HiveController.h"
 
 #include "message_filters/subscriber.h"
 
@@ -151,9 +152,8 @@ int main(int argc, char **argv) {
     ClawController::instance()->registerPublishers(fingerAnglePublish, wristAnglePublish);
     OffsetController::instance()->registerPublishers(offsetPublish);
 
-    // Put the first behavior on stack
 
-    SMACS::instance()->push(new SearchBehavior());
+    SMACS::instance()->robotName = publishedName;
     //SMACS::instance()->push(new DropBehavior());
 
     // Disable the sonar because the robot is not doing anything yet
@@ -163,6 +163,8 @@ int main(int argc, char **argv) {
     ClawController::instance()->fingerOpen();
     // Put wist up
     ClawController::instance()->wristUp();
+
+    HiveController::instance()->CheckIn(publishedName);
 
     // Spin the node
     ros::spin();
@@ -175,9 +177,18 @@ void tick(const ros::TimerEvent&) {
     // If mode is auto
     if (currentMode == 2 || currentMode == 3) {
         if(!init){
+            // Put the first behavior on stack
+            SMACS::instance()->push(new SearchBehavior());
+
+            // Get round type
+            bool roundType = HiveController::instance()->roundType();
+            cout <<"ROUNDTYPE: "<< roundType<<endl;
+
+
+            // Set heading and offset the position
             float theta = IMUHandler::instance()->theta;
-            float x = 0 + (0.5 * cos(theta)); //(remainingGoalDist * cos(oldGoalLocation.theta));
-            float y = 0 + (0.5 * sin(theta)); //(remainingGoalDist * sin(oldGoalLocation.theta));
+            float x = 0 + (0.5 * cos(theta));
+            float y = 0 + (0.5 * sin(theta));
 
             OffsetController::instance()->sendOffsets(-x, -y, IMUHandler::instance()->w, IMUHandler::instance()->z);
 

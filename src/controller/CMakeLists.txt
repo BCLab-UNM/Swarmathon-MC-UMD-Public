@@ -121,6 +121,7 @@ add_executable(
   src/controllers/PID.cpp
   src/controllers/OffsetController.cpp
   src/controllers/ClawController.cpp
+  src/controllers/HiveController.cpp
   src/behaviors/SearchForDropBehavior.cpp
   src/behaviors/AvoidCenterBehavior.cpp
 )

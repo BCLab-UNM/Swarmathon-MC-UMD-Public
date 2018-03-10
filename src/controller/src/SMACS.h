@@ -6,6 +6,7 @@
 #include <stack>
 #include <mutex>
 #include <iostream>
+#include <string>
 
 using namespace std;
 
@@ -16,6 +17,7 @@ class Behavior;
 // The stack allows to have some kind or robot memory where it can 
 // remember what it was doing
 class SMACS{
+
     static SMACS* s_instance;
     // Stack that holds behaviors
     std::stack <Behavior*> behaviorStack;
@@ -27,6 +29,8 @@ class SMACS{
     bool locked = false;
 
 public:
+    string robotName;
+
     static SMACS* instance();
 
     //pushes on top of the stack

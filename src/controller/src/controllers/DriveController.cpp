@@ -122,7 +122,7 @@ bool DriveController::goToLocation(float x, float y){
                 cout << "DRIVE: Skiding"<<endl;
 
                 // calculate the angle between the current x and y and the desired to find out if we need to turn a little
-                currentDrive.theta = atan2(currentDrive.y - currentLocation.y, currentDrive.x - currentLocation.x);
+                //currentDrive.theta = atan2(currentDrive.y - currentLocation.y, currentDrive.x - currentLocation.x);
 
                 // calculate the angle error. This can let us turn and drive if the angle is big
                 float errorYaw = angles::shortest_angular_distance(currentLocation.theta, currentDrive.theta);
