@@ -71,6 +71,8 @@ bool PickUpBehavior::tick(){
             } else {
                 if(precisionDrive){
                     currentStage = RETRY;
+                    initX = OdometryHandler::instance()->getX();
+                    initY = OdometryHandler::instance()->getY();
                 }else{
                     DriveController::instance()->stop();
                     SonarHandler::instance()->setEnable(true);
@@ -233,7 +235,7 @@ bool PickUpBehavior::tick(){
                     ClawController::instance()->wristDownWithCube();
                     TargetHandler::instance()->setEnabled(false);
                     TargetHandler::instance()->setHasCube(true);
-                    SonarHandler::instance()->setEnable(true);
+                    //SonarHandler::instance()->setEnable(true);
                     currentStage = DROP;
                 } else {
                     targetLocked = false;
