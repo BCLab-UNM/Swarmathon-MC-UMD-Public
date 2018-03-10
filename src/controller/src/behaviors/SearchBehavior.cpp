@@ -27,13 +27,13 @@ void SearchBehavior::nextPoint(){
         first = false;
     } else if(second){
         theta = OdometryHandler::instance()->getTheta() + M_PI_2;
-        distance = 1;
+        distance = 1.5;
         x = OdometryHandler::instance()->getX() + ((distance) * cos(theta));
         y = OdometryHandler::instance()->getY() + ((distance) * sin(theta));
         second = false;
     } else if(third){
         theta = OdometryHandler::instance()->getTheta() + M_PI_2;
-        distance = 2.5;
+        distance = 3;
         x = OdometryHandler::instance()->getX() + ((distance) * cos(theta));
         y = OdometryHandler::instance()->getY() + ((distance) * sin(theta));
         third = false;
