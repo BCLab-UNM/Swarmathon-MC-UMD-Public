@@ -8,7 +8,7 @@ ClawController::ClawController() {
     wristDownAngle.data = M_PI_2-0.15;
     wristUpAngle.data = 0.0;
 
-    wristDownAngleWithCube.data = M_PI_2 - 0.25;
+    wristDownAngleWithCube.data = M_PI_2 - 0.30;
 
 }
 
