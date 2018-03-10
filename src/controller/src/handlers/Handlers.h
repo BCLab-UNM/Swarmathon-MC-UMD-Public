@@ -142,6 +142,7 @@ class TargetHandler{
 
     bool hasCube = false;
     bool isHandlerOn = true;
+    bool isAvoidCenterOn = true;
 
     float lastSeenBlockErrorYaw = 0;
 
@@ -168,6 +169,10 @@ public:
 
     bool getHasCube(){
         return hasCube;
+    }
+
+    void setAvoidCenterEnabled(bool avoidCenter){
+        this->isAvoidCenterOn = avoidCenter;
     }
 
 };
