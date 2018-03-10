@@ -6,10 +6,12 @@ sbridge::sbridge(std::string publishedName) {
 
 
     driveControlSubscriber = sNH.subscribe((publishedName + "/driveControl"), 10, &sbridge::cmdHandler, this);
+    filteredSubscriber = sNH.subscribe((publishedName + "/odom/filtered"), 10, &sbridge::filteredHandler, this);
 
     heartbeatPublisher = sNH.advertise<std_msgs::String>((publishedName + "/sbridge/heartbeat"), 1, false);
     skidsteerPublish = sNH.advertise<geometry_msgs::Twist>((publishedName + "/skidsteer"), 10);
     infoLogPublisher = sNH.advertise<std_msgs::String>("/infoLog", 1, true);
+    filteredOffset = sNH.advertise<nav_msgs::Odometry>((publishedName +"/odom/filteredOffset"), 10);
 
     float heartbeat_publish_interval = 2;
     publish_heartbeat_timer = sNH.createTimer(ros::Duration(heartbeat_publish_interval), &sbridge::publishHeartBeatTimerEventHandler, this);
@@ -59,6 +61,15 @@ void sbridge::cmdHandler(const geometry_msgs::Twist::ConstPtr& message) {
             velocity.angular.z = turn;
     skidsteerPublish.publish(velocity);
 }
+
+void sbridge::filteredHandler(const nav_msgs::Odometry::ConstPtr &msg){
+    nav_msgs::Odometry newOdom;
+    newOdom.pose = msg->pose;
+    newOdom.twist = msg->twist;
+
+    filteredOffset.publish(newOdom);
+}
+
 
 void sbridge::publishHeartBeatTimerEventHandler(const ros::TimerEvent& event) {
     std_msgs::String msg;

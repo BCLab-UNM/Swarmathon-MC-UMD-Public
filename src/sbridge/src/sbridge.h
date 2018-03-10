@@ -9,6 +9,7 @@
 #include <geometry_msgs/QuaternionStamped.h>
 #include <geometry_msgs/Twist.h>
 #include <std_msgs/UInt8.h>
+#include <nav_msgs/Odometry.h>
 
 using namespace std;
 
@@ -22,6 +23,7 @@ class sbridge {
 
 		sbridge(std::string publishedName);
 		void cmdHandler(const geometry_msgs::Twist::ConstPtr& message);
+        void filteredHandler(const nav_msgs::Odometry::ConstPtr& msg);
         ~sbridge();
 
 	private:
@@ -30,10 +32,12 @@ class sbridge {
 		ros::Publisher skidsteerPublish;
         ros::Publisher heartbeatPublisher;
         ros::Publisher infoLogPublisher;
+        ros::Publisher filteredOffset;
 
 		//Subscribers
 		ros::Subscriber driveControlSubscriber;
         ros::Subscriber modeSubscriber;
+        ros::Subscriber filteredSubscriber;
 
         //Timer callback handler
         void publishHeartBeatTimerEventHandler(const ros::TimerEvent& event);
