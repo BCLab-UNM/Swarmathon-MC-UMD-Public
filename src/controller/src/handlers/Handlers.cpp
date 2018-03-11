@@ -80,6 +80,9 @@ void OdometryHandler::handle(const nav_msgs::Odometry::ConstPtr &message){
     linearVelocity = message->twist.twist.linear.x;
     angularVelocity = message->twist.twist.angular.z;
 
+    this->w = message->pose.pose.orientation.w;
+    this->z = message->pose.pose.orientation.z;
+
     //Get theta rotation by converting quaternion orientation to pitch/roll/yaw
     tf::Quaternion q(message->pose.pose.orientation.x, message->pose.pose.orientation.y, message->pose.pose.orientation.z, message->pose.pose.orientation.w);
     tf::Matrix3x3 m(q);

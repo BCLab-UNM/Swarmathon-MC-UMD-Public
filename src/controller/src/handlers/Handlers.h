@@ -79,6 +79,9 @@ class OdometryHandler{
     OdometryHandler();
 
 public:
+    float w;
+    float z;
+
     static OdometryHandler* instance();
 
     void handle(const nav_msgs::Odometry::ConstPtr& message);
