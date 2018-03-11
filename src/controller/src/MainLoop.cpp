@@ -177,14 +177,6 @@ void tick(const ros::TimerEvent&) {
     // If mode is auto
     if (currentMode == 2 || currentMode == 3) {
         if(!init){
-            // Put the first behavior on stack
-            SMACS::instance()->push(new SearchBehavior());
-
-            // Get round type
-            bool roundType = HiveController::instance()->roundType();
-            cout <<"ROUNDTYPE: "<< roundType<<endl;
-
-
             // Set heading and offset the position
             float theta = IMUHandler::instance()->theta;
             float x = 0 + (0.5 * cos(theta));
@@ -192,7 +184,17 @@ void tick(const ros::TimerEvent&) {
 
             OffsetController::instance()->sendOffsets(-x, -y, IMUHandler::instance()->w, IMUHandler::instance()->z);
 
+            // Put the first behavior on stack
+            SMACS::instance()->push(new SearchBehavior());
+
+            // Get round type
+            bool roundType = HiveController::instance()->roundType();
+            cout <<"ROUNDTYPE: "<< roundType<<endl;
+
             init = true;
+
+            // Sleep to let offset reset
+            sleep(2);
         }
     	// If sonar handler is not enables
         if(!collisionEnabled){
