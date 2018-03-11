@@ -6,7 +6,6 @@ bool SearchBehavior::tick(){
     if(first){
         nextPoint();
     } else {
-        cout<<"SEARCH: Drive"<<endl;
         if(DriveController::instance()->goToLocation(x, y)){
             cout<<"SEARCH: NEW Point"<<endl;
             nextPoint();
@@ -20,16 +19,19 @@ bool SearchBehavior::tick(){
 
 void SearchBehavior::nextPoint(){
     if(first){
+
         theta = OdometryHandler::instance()->getTheta() + M_PI;
         distance = 0.5;
         x = OdometryHandler::instance()->getX() + ((distance) * cos(theta));
         y = OdometryHandler::instance()->getY() + ((distance) * sin(theta));
+        cout<<"SEARCH: Driving to first: "<<x<<" "<<y<<endl;
         first = false;
     } else if(second){
         theta = OdometryHandler::instance()->getTheta() + M_PI_2;
         distance = 1.5;
         x = OdometryHandler::instance()->getX() + ((distance) * cos(theta));
         y = OdometryHandler::instance()->getY() + ((distance) * sin(theta));
+        cout<<"SEARCH: Driving to second: "<<x<<" "<<y<<endl;
         second = false;
     } else if(third){
         theta = OdometryHandler::instance()->getTheta() + M_PI_2;

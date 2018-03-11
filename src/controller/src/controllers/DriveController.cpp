@@ -132,7 +132,7 @@ bool DriveController::goToLocation(float x, float y){
 
 
                 // goal not yet reached drive while maintaining proper heading.
-                if (fabs(errorYaw) < M_PI_2 &&  distance > waypointTolerance){
+                if (fabs(errorYaw) < rotateOnlyAngleTolerance &&  distance > waypointTolerance){
                     fastPID((searchVelocity-linear) ,0, searchVelocity, 0);
                 } else {
                     stop();
