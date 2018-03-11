@@ -1,4 +1,5 @@
 #include <ros/ros.h>
+#include <sys/time.h>
 
 // ROS libraries
 #include <angles/angles.h>
@@ -57,6 +58,7 @@ void joyCmdHandler(const sensor_msgs::Joy::ConstPtr& message);
 void publishHeartBeatTimerEventHandler(const ros::TimerEvent& event);
 void publishStatusTimerEventHandler(const ros::TimerEvent& event);
 void tick(const ros::TimerEvent&); //main tick of the robot
+long millis();
 
 
 
@@ -100,6 +102,7 @@ bool collisionEnabled = false;
 
 bool init = false;
 
+long initTime = 0;
 
 
 int main(int argc, char **argv) {
@@ -192,9 +195,8 @@ void tick(const ros::TimerEvent&) {
             cout <<"ROUNDTYPE: "<< roundType<<endl;
 
             init = true;
-
+            initTime = millis();
             // Sleep to let offset reset
-            sleep(2);
         }
     	// If sonar handler is not enables
         if(!collisionEnabled){
@@ -203,9 +205,10 @@ void tick(const ros::TimerEvent&) {
         }
 
 
-
-        // Tick the SMACS
-        SMACS::instance()->tick();
+        if(initTime - millis() > 2){
+            // Tick the SMACS
+            SMACS::instance()->tick();
+        }
 
 
         //Flag that states that robot is in auto
@@ -280,7 +283,12 @@ void publishHeartBeatTimerEventHandler(const ros::TimerEvent&) {
 }
 
 
-
+long millis(){
+    struct timeval tp;
+    gettimeofday(&tp, 0);
+    long int ms = tp.tv_sec * 1000 + tp.tv_usec / 1000;
+    return ms;
+}
 
 
 
