@@ -6,11 +6,13 @@ bool SearchForDropBehavior::tick(){
         SonarHandler::instance()->setEnable(true);
         //turn off camera for center avoid and cube pick up
         TargetHandler::instance()->setEnabled(false);
-        switch(stage){
+        switch(stage){       
             case ODOM_TARGET:
             {
                 TargetHandler::instance()->setEnabled(false);
-                if(DriveController::instance()->goToLocation(0, 0)){
+                float centerX = OffsetController::instance()->centerX;
+                float centerY = OffsetController::instance()->centerY;
+                if(DriveController::instance()->goToLocation(centerX, centerY)){
                     stage = TURN_TO_THETA;
                     theta = OdometryHandler::instance()->getTheta();
                     x = OdometryHandler::instance()->getX() + ((distance) * cos(theta));
@@ -22,7 +24,7 @@ bool SearchForDropBehavior::tick(){
             }
             case TURN_TO_THETA:
             {
-                if(DriveController::instance()->turnToTheta(DriveController::instance()->getResetTheta())){
+                if(DriveController::instance()->turnToTheta(OffsetController::instance()->centerTheta)){
                     stage = SEARCH_FOR_CENTER;
                     theta = OdometryHandler::instance()->getTheta();
                     x = OdometryHandler::instance()->getX() + ((distance) * cos(theta));

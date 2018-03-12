@@ -186,6 +186,10 @@ void tick(const ros::TimerEvent&) {
             float y = 0 + (0.5 * sin(theta));
 
             OffsetController::instance()->sendOffsets(-x, -y, IMUHandler::instance()->w, IMUHandler::instance()->z);
+            OffsetController::instance()->centerX = 0;
+            OffsetController::instance()->centerY = 0;
+            OffsetController::instance()->centerTheta = theta;
+
 
             // Put the first behavior on stack
             SMACS::instance()->push(new SearchBehavior());

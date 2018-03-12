@@ -11,6 +11,10 @@ class OffsetController{
     OffsetController(){}
 
 public:
+    float centerX;
+    float centerY;
+    float centerTheta;
+
     static OffsetController* instance();
     void registerPublishers(ros::Publisher& offsetPublisher);
 
