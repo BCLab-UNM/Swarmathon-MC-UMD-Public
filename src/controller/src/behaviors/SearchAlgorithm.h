@@ -8,6 +8,7 @@
 
 class SearchAlgorithmBehavior: public Behavior{
     bool initialize = true;
+    bool first_checking=true;
     bool initialDrive = true;
     bool initialCheck = true;
     bool AlgorithmA = false;
@@ -35,6 +36,17 @@ class SearchAlgorithmBehavior: public Behavior{
     float xiterator;
     float yiterator;
 
+    int msleep(unsigned long milisec)
+    { //Funvtion to stop the program for miliseconds
+        struct timespec req={0};
+        time_t sec=(int)(milisec/1000);
+        milisec=milisec-(sec*1000);
+        req.tv_sec=sec;
+        req.tv_nsec=milisec*1000000L;
+        while(nanosleep(&req,&req)==-1)
+            continue;
+        return 1;
+    }
 
 
     int iterCount = 0;
