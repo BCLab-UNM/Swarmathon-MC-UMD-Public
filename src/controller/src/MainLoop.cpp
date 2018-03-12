@@ -205,7 +205,7 @@ void tick(const ros::TimerEvent&) {
         }
 
 
-        if(initTime - millis() > 2){
+        if(millis() - initTime > 2000){
             // Tick the SMACS
             SMACS::instance()->tick();
         }
