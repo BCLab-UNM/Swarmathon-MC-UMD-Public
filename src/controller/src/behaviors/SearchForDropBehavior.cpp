@@ -3,7 +3,7 @@
 bool SearchForDropBehavior::tick(){
     if(TargetHandler::instance()->getHasCube()){
         //turn on sonars for avoid
-        SonarHandler::instance()->setEnable(true);
+        SonarHandler::instance()->setEnable(false);
         //turn off camera for center avoid and cube pick up
         TargetHandler::instance()->setEnabled(false);
         switch(stage){       

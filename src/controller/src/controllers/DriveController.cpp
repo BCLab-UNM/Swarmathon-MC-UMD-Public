@@ -91,7 +91,7 @@ bool DriveController::goToLocation(float x, float y){
 
                 // If we have not completed the turn 
                 // TODO: This needs fixing because there might be a case where we overshoot
-                if(abs_error <= finalRotationTolerance){
+                if(abs_error >= finalRotationTolerance){
                     cout << "DRIVE: correction angle: " << abs_error<<endl;
                     //find out if left or right
                     //if need to turn right
@@ -112,7 +112,8 @@ bool DriveController::goToLocation(float x, float y){
                      stop();
                      stateMachineState = STATE_MACHINE_SKID_STEER;
                      cout << "DRIVE: Switching to skid"<<endl;
-                }
+                     break;
+		}
 
             }
 
@@ -132,8 +133,8 @@ bool DriveController::goToLocation(float x, float y){
 
                 if(fabs(errorYaw) < rotateOnlyAngleTolerance){
                     // goal not yet reached drive while maintaining proper heading.
-                    if (distance < waypointTolerance){
-                        constPID((searchVelocity-linear) ,0, searchVelocity, 0);
+                    if (distance > waypointTolerance){
+                        slowPID((searchVelocity-linear) ,0, searchVelocity, 0);
                     } else {
                         stop();
                         stateMachineState = STATE_MACHINE_ROTATE;
