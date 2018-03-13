@@ -10,9 +10,11 @@ public:
     
     //Functions
     void update();
-    
+    int getLeftEncoder(); 
+    int getRightEncoder();    
+	    
     //Variables
-    float x, y, theta;
+    float x, y,dx,dy, theta;
     float vx, vy, vtheta;
     long clock;
 

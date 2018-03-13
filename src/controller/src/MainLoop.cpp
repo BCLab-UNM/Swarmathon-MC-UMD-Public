@@ -236,7 +236,7 @@ void tick(const ros::TimerEvent&) {
 void publishStatusTimerEventHandler(const ros::TimerEvent&) {
   std_msgs::String msg;
   //Added + because we will use custom arduino code
-  msg.data = "online+";
+  msg.data = "MC+";
   status_publisher.publish(msg);
 }
 
