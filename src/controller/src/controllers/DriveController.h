@@ -32,11 +32,11 @@ class DriveController{
     float scaler = 0.5;
     float searchVelocity = 0.20; // meters/second  //0.65 MAX value
     float yawVelocity = 0.40;
-   
+
     // The initial left min and right min values for the robot
-    // Used when the robot never ran the calibration 
-    double leftMin = 70;
-    double rightMin = 70;
+    // Used when the robot never ran the calibration
+    double leftMin = 60;
+    double rightMin = 60;
 
     ros::Publisher drivePublisher;
     geometry_msgs::Twist velocity;
@@ -48,7 +48,7 @@ class DriveController{
     float prevDistanceTurned;
     float distanceTurned;
     float initDirection;
-  
+
     //Max PWM is 255
     //abridge currently limits MAX to 120 to prevent over-current draw
     float left; //left wheels PWM value
@@ -72,7 +72,7 @@ class DriveController{
         stateMachineState = STATE_MACHINE_ROTATE;
         fastVelPID.SetConfiguration(fastVelConfig());
         fastYawPID.SetConfiguration(fastYawConfig());
-        
+
         slowVelPID.SetConfiguration(slowVelConfig());
         slowYawPID.SetConfiguration(slowYawConfig());
 
@@ -120,7 +120,7 @@ class DriveController{
          */
         void registerDrivePublisher(ros::Publisher& drivePublisher);
 
-        // Got to X and Y point 
+        // Got to X and Y point
         bool goToLocation(float x, float y);
 
         // Go a certain distance in a certain direction
@@ -138,7 +138,7 @@ class DriveController{
         // Reset controller values
         void resetDriveController(float x, float y);
 
-        // send drive command to the publisher 
+        // send drive command to the publisher
         void sendDriveCommand(double left, double right);
 
         // Turn right with speed
@@ -147,10 +147,10 @@ class DriveController{
         // Turn left with speed
         void turnLeft(double speed){sendDriveCommand(-speed, speed);}
 
-        // Set the left and right wheel min value 
+        // Set the left and right wheel min value
         void setLeftRightMin(double leftMin, double rightMin);
 
-        // Get the left wheel min 
+        // Get the left wheel min
         double getLeftMin(){return leftMin;}
 
         // get right wheel min

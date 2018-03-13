@@ -1,5 +1,12 @@
 #include "PickUpBehavior.h"
 
+
+int PickUpBehavior::leftPos = 1;
+int PickUpBehavior::rightPos = 1;
+int PickUpBehavior::leftNeg = -1;
+int PickUpBehavior::rightNeg = -1;
+long PickUpBehavior::lastCheck = 0;
+
 bool PickUpBehavior::tick(){
     switch (currentStage){
         case LOCK_TARGET:
@@ -86,7 +93,6 @@ bool PickUpBehavior::tick(){
         }
         case TURN_TO_FACE_TARGET:
         {
-            bool leftTurn = true;
             //get current angle
             float currentTheta = OdometryHandler::instance()->getTheta();
 
@@ -105,23 +111,28 @@ bool PickUpBehavior::tick(){
                 initX = OdometryHandler::instance()->getX();
                 initY = OdometryHandler::instance()->getY();
             } else {
-                float rightWheelMin = DriveController::instance()->getRightMin();
-                float leftWheelMin = DriveController::instance()->getLeftMin();
-
                 if (blockYawError < 0){
                     //turn left
-                    if(abs_blockYaw - abs_error > 0)
-                        DriveController::instance()->sendDriveCommand(-left, right);
-                    else
-                        DriveController::instance()->sendDriveCommand(left, -right);
+                    if(abs_blockYaw - abs_error > 0){
+                        DriveController::instance()->sendDriveCommand(leftNeg, rightPos);
+                        fix(leftNeg, rightPos);
+                    }else{
+                        DriveController::instance()->sendDriveCommand(leftPos, rightNeg);
+                        fix(leftPos, rightNeg);
+                    }
 
                 } else {
                     //trun right
-                    if(abs_blockYaw - abs_error > 0)
-                        DriveController::instance()->sendDriveCommand(left, -right);
-                    else
-                        DriveController::instance()->sendDriveCommand(-left, right);
+                    if(abs_blockYaw - abs_error > 0){
+                        DriveController::instance()->sendDriveCommand(leftPos, rightNeg);
+                        fix(leftPos, rightNeg);
+                    } else {
+                        DriveController::instance()->sendDriveCommand(leftNeg, rightPos);
+                        fix(leftNeg, rightPos);
+                    }
                 }
+
+
             }
 
             break;
@@ -152,8 +163,6 @@ bool PickUpBehavior::tick(){
         }
         case PRECISION_TURN:
         {
-            //turn again once closer to the cube
-            bool leftTurn = true;
             //get current angle
             float currentTheta = OdometryHandler::instance()->getTheta();
 
@@ -174,22 +183,19 @@ bool PickUpBehavior::tick(){
 
 
             } else {
-                float rightWheelMin = DriveController::instance()->getRightMin();
-                float leftWheelMin = DriveController::instance()->getLeftMin();
-
                 if (blockYawError < 0){
                     //turn left
                     if(abs_blockYaw - abs_error - 0.175 > 0)
-                        DriveController::instance()->sendDriveCommand(-left, right);
+                        DriveController::instance()->sendDriveCommand(leftNeg, rightPos);
                     else
-                        DriveController::instance()->sendDriveCommand(left, -right);
+                        DriveController::instance()->sendDriveCommand(leftPos, rightNeg);
 
                 } else {
                     //trun right
                     if(abs_blockYaw - abs_error - 0.175 > 0)
-                        DriveController::instance()->sendDriveCommand(left, -right);
+                        DriveController::instance()->sendDriveCommand(leftPos, rightNeg);
                     else
-                        DriveController::instance()->sendDriveCommand(-left, right);
+                        DriveController::instance()->sendDriveCommand(leftNeg, rightPos);
                 }
             }
 
@@ -352,8 +358,54 @@ bool PickUpBehavior::tick(){
 
     }
 
+
     return false;
 
+}
+
+void PickUpBehavior::fix(int left, int right){
+    //get encoders
+    int e_left = EncoderHandler::instance()->getEncoderLeft();
+    int e_right = EncoderHandler::instance()->getEncoderRight();
+    if(millis() - lastCheck > 1000){
+        if(prev_e_left != e_left){
+            if(fabs(e_left) < e_set){
+                if(left > 0){
+                    leftPos += 5;
+                } else {
+                    leftNeg -=5;
+                }
+            } else if (fabs(e_left) > e_set){
+                if(left > 0){
+                    leftPos -= 5;
+                } else {
+                    leftNeg +=5;
+                }
+            }
+
+            prev_e_left = e_left;
+        }
+
+        if(prev_e_right != e_right){
+            if(fabs(e_right) < e_set){
+                if(right > 0){
+                    rightPos += 5;
+                } else {
+                    rightNeg -=5;
+                }
+            } else if(fabs(e_right) > e_set){
+                if(right > 0){
+                    rightPos += 5;
+                } else {
+                    rightNeg -=5;
+                }
+            }
+
+            prev_e_right = e_right;
+        }
+
+        lastCheck = millis();
+    }
 }
 
 
