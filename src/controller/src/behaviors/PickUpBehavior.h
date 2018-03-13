@@ -46,7 +46,7 @@ class PickUpBehavior : public Behavior{
 
     int driveSpeed = 30;
 
-    int e_set = 150;
+    int e_set = 200;
 
     static int leftPos;
     static int rightPos;
@@ -71,7 +71,7 @@ class PickUpBehavior : public Behavior{
 
         bool tick();
 
-        void fix(int, int);
+        void fix(bool, bool);
 
         bool wait(int sec);
 };

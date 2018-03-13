@@ -115,20 +115,20 @@ bool PickUpBehavior::tick(){
                     //turn left
                     if(abs_blockYaw - abs_error > 0){
                         DriveController::instance()->sendDriveCommand(leftNeg, rightPos);
-                        fix(leftNeg, rightPos);
+                        fix(true, false);
                     }else{
                         DriveController::instance()->sendDriveCommand(leftPos, rightNeg);
-                        fix(leftPos, rightNeg);
+                        fix(false, true);
                     }
 
                 } else {
                     //trun right
                     if(abs_blockYaw - abs_error > 0){
                         DriveController::instance()->sendDriveCommand(leftPos, rightNeg);
-                        fix(leftPos, rightNeg);
+                        fix(false, true);
                     } else {
                         DriveController::instance()->sendDriveCommand(leftNeg, rightPos);
-                        fix(leftNeg, rightPos);
+                        fix(true, false);
                     }
                 }
 
@@ -363,20 +363,20 @@ bool PickUpBehavior::tick(){
 
 }
 
-void PickUpBehavior::fix(int left, int right){
+void PickUpBehavior::fix(bool left, bool right){
     //get encoders
     int e_left = EncoderHandler::instance()->getEncoderLeft();
     int e_right = EncoderHandler::instance()->getEncoderRight();
     if(millis() - lastCheck > 1000){
         if(prev_e_left != e_left){
             if(fabs(e_left) < e_set){
-                if(left > 0){
+                if(!left){
                     leftPos += 5;
                 } else {
                     leftNeg -=5;
                 }
             } else if (fabs(e_left) > e_set){
-                if(left > 0){
+                if(!left){
                     leftPos -= 5;
                 } else {
                     leftNeg +=5;
@@ -388,16 +388,16 @@ void PickUpBehavior::fix(int left, int right){
 
         if(prev_e_right != e_right){
             if(fabs(e_right) < e_set){
-                if(right > 0){
+                if(!right){
                     rightPos += 5;
                 } else {
                     rightNeg -=5;
                 }
             } else if(fabs(e_right) > e_set){
-                if(right > 0){
-                    rightPos += 5;
+                if(!right){
+                    rightPos -= 5;
                 } else {
-                    rightNeg -=5;
+                    rightNeg +=5;
                 }
             }
 
