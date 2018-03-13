@@ -41,18 +41,16 @@ bool SearchForDropBehavior::tick(){
                     // Drive one meter forward
                     if(DriveController::instance()->goToLocation(x, y)){
                         searchTry++;
-                        theta = OdometryHandler::instance()->getTheta() + M_PI_2;
+                        theta = theta + M_PI_2;
                         x = OdometryHandler::instance()->getX() + ((distance) * cos(theta));
                         y = OdometryHandler::instance()->getY() + ((distance) * sin(theta));
                     }
                 } else if(searchTry >= 1){
                     if(DriveController::instance()->goToLocation(x, y)){
-                        theta = OdometryHandler::instance()->getTheta() + M_PI_2;
+                        theta = theta + M_PI_2;
                         x = OdometryHandler::instance()->getX() + ((distance) * cos(theta));
                         y = OdometryHandler::instance()->getY() + ((distance) * sin(theta));
                         searchTry++;
-                    }
-                    if(searchTry % 2 == 0){
                         distance+=0.25;
                     }
 

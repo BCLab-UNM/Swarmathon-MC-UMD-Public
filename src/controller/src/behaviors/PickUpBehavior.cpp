@@ -46,7 +46,6 @@ bool PickUpBehavior::tick(){
                 }
 
                 if(targetLocked){
-                    ///TODO: Explain the trig going on here- blockDistance is c, 0.195 is b; find a
                     blockDistanceFromCamera = hypot(hypot(tags[target].getPositionX(), tags[target].getPositionY()), tags[target].getPositionZ());
 
                     if ( (blockDistanceFromCamera*blockDistanceFromCamera - 0.195*0.195) > 0 )
@@ -114,12 +113,11 @@ bool PickUpBehavior::tick(){
                 if (blockYawError < 0){
                     //turn left
                     if(abs_blockYaw - abs_error > 0){
-			cout << "PICKUPDIR: left turn"<<endl;
+                        cout << "PICKUPDIR: left turn"<<endl;
                         DriveController::instance()->sendDriveCommand(leftNeg, rightPos);
                         fix(true, false);
                     }else{
-			cout << "PICKUPDIR: right turn"<<endl;
-
+                        cout << "PICKUPDIR: right turn"<<endl;
                         DriveController::instance()->sendDriveCommand(leftPos, rightNeg);
                         fix(false, true);
                     }
@@ -128,12 +126,10 @@ bool PickUpBehavior::tick(){
                     //trun right
                     if(abs_blockYaw - abs_error > 0){
                         cout << "PICKUPDIR: right turn"<<endl;
-
-			DriveController::instance()->sendDriveCommand(leftPos, rightNeg);
+                        DriveController::instance()->sendDriveCommand(leftPos, rightNeg);
                         fix(false, true);
                     } else {
-			cout << "PICKUPDIR: left turn"<<endl;
-
+                        cout << "PICKUPDIR: left turn"<<endl;
                         DriveController::instance()->sendDriveCommand(leftNeg, rightPos);
                         fix(true, false);
                     }
@@ -193,22 +189,26 @@ bool PickUpBehavior::tick(){
                 if (blockYawError < 0){
                     //turn left
                     if(abs_blockYaw - abs_error - 0.175 > 0){
-			cout << "PICKUPDIR: left pres turn"<<endl;
+                        cout << "PICKUPDIR: left pres turn"<<endl;
                         DriveController::instance()->sendDriveCommand(leftNeg, rightPos);
+                        fix(true, false);
                     }else{
-			cout << "PICKUPDIR: right pres turn"<<endl;
+                        cout << "PICKUPDIR: right pres turn"<<endl;
                         DriveController::instance()->sendDriveCommand(leftPos, rightNeg);
-}
+                        fix(false, true);
+                    }
                 } else {
                     //trun right
                     if(abs_blockYaw - abs_error - 0.175 > 0){
- 			cout << "PICKUPDIR: right pres turn"<<endl;
+                        cout << "PICKUPDIR: right pres turn"<<endl;
                         DriveController::instance()->sendDriveCommand(leftPos, rightNeg);
+                        fix(false, true);
                     }else{
- 			cout << "PICKUPDIR: left pres turn"<<endl;
+                        cout << "PICKUPDIR: left pres turn"<<endl;
                         DriveController::instance()->sendDriveCommand(leftNeg, rightPos);
-		}                
-}
+                        fix(true, false);
+                    }
+                }
             }
 
             break;
@@ -225,7 +225,7 @@ bool PickUpBehavior::tick(){
             float distance = hypot(initX - currX, initY - currY);
             cout << "PICKUP: distance left " << (blockDistance - distance) << " Curr dist: "<<distance<< endl;
 
-            if(blockDistance - distance <= 0.15){
+            if(blockDistance - distance <= 0.10){
                 currentStage = PICK_UP;
 
                 DriveController::instance()->stop();
