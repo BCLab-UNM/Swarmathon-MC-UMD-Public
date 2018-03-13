@@ -91,7 +91,7 @@ bool DriveController::goToLocation(float x, float y){
 
                 // If we have not completed the turn 
                 // TODO: This needs fixing because there might be a case where we overshoot
-                if(abs_error >= finalRotationTolerance){
+                if(abs_error <= finalRotationTolerance){
                     cout << "DRIVE: correction angle: " << abs_error<<endl;
                     //find out if left or right
                     //if need to turn right
