@@ -66,7 +66,7 @@ bool DriveController::goToLocation(float x, float y){
 
                     // If angle > rotateOnlyAngleTolerance radians rotate but don't drive forward.
                     if (abs_error > rotateOnlyAngleTolerance){
-                        fastPID(0.0, errorYaw, 0.0, currentDrive.theta);
+                        slowPID(0.0, errorYaw, 0.0, currentDrive.theta);
                         break;
                     } else {
                         stop();
