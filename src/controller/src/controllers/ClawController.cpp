@@ -5,10 +5,10 @@ ClawController* ClawController::s_instance = 0;
 ClawController::ClawController() {
     fingerOpenAngle.data =  M_PI_2;
     fingerCloseAngle.data = 0.0;
-    wristDownAngle.data = M_PI_2;
+    wristDownAngle.data = M_PI_2-0.15;
     wristUpAngle.data = 0.0;
 
-    wristDownAngleWithCube.data = M_PI_2 - 0.15;
+    wristDownAngleWithCube.data = M_PI_2 - 0.50;
 
 }
 

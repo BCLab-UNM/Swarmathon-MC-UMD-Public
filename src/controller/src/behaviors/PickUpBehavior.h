@@ -42,9 +42,21 @@ class PickUpBehavior : public Behavior{
     float initY = 0;
     float angleTolerance = 0.0175;
 
-    float driveBackDist = 0.25;
+    float driveBackDist = 0.15;
 
-    int driveSpeed = 40;
+    int driveSpeed = 30;
+
+    int e_set = 300;
+
+    static int leftPos;
+    static int rightPos;
+    static int leftNeg;
+    static int rightNeg;
+
+    int prev_e_left;
+    int prev_e_right;
+
+    static long lastCheck;
 
     bool waiting;
     time_t initTime;
@@ -54,11 +66,12 @@ class PickUpBehavior : public Behavior{
     public:
         PickUpBehavior() : Behavior(PICKUP_BEHAVIOR_TYPE){
             currentStage = LOCK_TARGET;
-
             targetLocked = false;
         }
 
         bool tick();
+
+        void fix(bool, bool);
 
         bool wait(int sec);
 };

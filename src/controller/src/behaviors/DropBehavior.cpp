@@ -40,7 +40,19 @@ bool DropBehavior::tick(){
             x = OdometryHandler::instance()->getX();
             y = OdometryHandler::instance()->getY();
 
-            OffsetController::instance()->sendOffsets(0, 0, IMUHandler::instance()->w, IMUHandler::instance()->z);
+            //if the offset is greater than 2.5 meter
+            if(fabs(hypot(x - OffsetController::instance()->centerX, y - OffsetController::instance()->centerY)) > 2.5){
+                //reset odom
+                OffsetController::instance()->sendOffsets(0, 0, OdometryHandler::instance()->w, OdometryHandler::instance()->z);
+            }
+
+            //Record the center
+            OffsetController::instance()->centerX = x;
+            OffsetController::instance()->centerY = y;
+            OffsetController::instance()->centerTheta = OdometryHandler::instance()->getTheta();
+
+
+
             break;
         }
         case DRIVE_BACK:

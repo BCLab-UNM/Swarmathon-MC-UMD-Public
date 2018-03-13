@@ -31,7 +31,7 @@ bool DriveController::goToLocation(float x, float y){
 
                 // Calculate the theta from our position to the desired position
                 // Where we should face to drive to where we want
-                // currentDrive.theta = atan2(currentDrive.y - currentLocation.y, currentDrive.x - currentLocation.x);
+                currentDrive.theta = atan2(currentDrive.y - currentLocation.y, currentDrive.x - currentLocation.x);
 
                 // Calculate the difference between current and desired heading in radians.
                 float errorYaw = angles::shortest_angular_distance(currentLocation.theta, currentDrive.theta);
@@ -132,8 +132,8 @@ bool DriveController::goToLocation(float x, float y){
 
 
                 // goal not yet reached drive while maintaining proper heading.
-                if (fabs(errorYaw) < M_PI_2 &&  distance > waypointTolerance){
-                    fastPID((searchVelocity-linear) ,0, searchVelocity, 0);
+                if (fabs(errorYaw) < rotateOnlyAngleTolerance &&  distance > waypointTolerance){
+                    constPID((searchVelocity-linear) ,0, searchVelocity, 0);
                 } else {
                     stop();
                     stateMachineState = STATE_MACHINE_ROTATE;

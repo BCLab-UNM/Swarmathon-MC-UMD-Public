@@ -1,5 +1,12 @@
 #include "PickUpBehavior.h"
 
+
+int PickUpBehavior::leftPos = 1;
+int PickUpBehavior::rightPos = 1;
+int PickUpBehavior::leftNeg = -1;
+int PickUpBehavior::rightNeg = -1;
+long PickUpBehavior::lastCheck = 0;
+
 bool PickUpBehavior::tick(){
     switch (currentStage){
         case LOCK_TARGET:
@@ -71,6 +78,8 @@ bool PickUpBehavior::tick(){
             } else {
                 if(precisionDrive){
                     currentStage = RETRY;
+                    initX = OdometryHandler::instance()->getX();
+                    initY = OdometryHandler::instance()->getY();
                 }else{
                     DriveController::instance()->stop();
                     SonarHandler::instance()->setEnable(true);
@@ -84,7 +93,6 @@ bool PickUpBehavior::tick(){
         }
         case TURN_TO_FACE_TARGET:
         {
-            bool leftTurn = true;
             //get current angle
             float currentTheta = OdometryHandler::instance()->getTheta();
 
@@ -103,23 +111,28 @@ bool PickUpBehavior::tick(){
                 initX = OdometryHandler::instance()->getX();
                 initY = OdometryHandler::instance()->getY();
             } else {
-                float rightWheelMin = DriveController::instance()->getRightMin();
-                float leftWheelMin = DriveController::instance()->getLeftMin();
-
                 if (blockYawError < 0){
                     //turn left
-                    if(abs_blockYaw - abs_error > 0)
-                        DriveController::instance()->sendDriveCommand(-leftWheelMin, rightWheelMin);
-                    else
-                        DriveController::instance()->sendDriveCommand(leftWheelMin, -rightWheelMin);
+                    if(abs_blockYaw - abs_error > 0){
+                        DriveController::instance()->sendDriveCommand(leftNeg, rightPos);
+                        fix(true, false);
+                    }else{
+                        DriveController::instance()->sendDriveCommand(leftPos, rightNeg);
+                        fix(false, true);
+                    }
 
                 } else {
                     //trun right
-                    if(abs_blockYaw - abs_error > 0)
-                        DriveController::instance()->sendDriveCommand(leftWheelMin, -rightWheelMin);
-                    else
-                        DriveController::instance()->sendDriveCommand(-leftWheelMin, rightWheelMin);
+                    if(abs_blockYaw - abs_error > 0){
+                        DriveController::instance()->sendDriveCommand(leftPos, rightNeg);
+                        fix(false, true);
+                    } else {
+                        DriveController::instance()->sendDriveCommand(leftNeg, rightPos);
+                        fix(true, false);
+                    }
                 }
+
+
             }
 
             break;
@@ -150,8 +163,6 @@ bool PickUpBehavior::tick(){
         }
         case PRECISION_TURN:
         {
-            //turn again once closer to the cube
-            bool leftTurn = true;
             //get current angle
             float currentTheta = OdometryHandler::instance()->getTheta();
 
@@ -172,22 +183,19 @@ bool PickUpBehavior::tick(){
 
 
             } else {
-                float rightWheelMin = DriveController::instance()->getRightMin();
-                float leftWheelMin = DriveController::instance()->getLeftMin();
-
                 if (blockYawError < 0){
                     //turn left
                     if(abs_blockYaw - abs_error - 0.175 > 0)
-                        DriveController::instance()->sendDriveCommand(-leftWheelMin, rightWheelMin);
+                        DriveController::instance()->sendDriveCommand(leftNeg, rightPos);
                     else
-                        DriveController::instance()->sendDriveCommand(leftWheelMin, -rightWheelMin);
+                        DriveController::instance()->sendDriveCommand(leftPos, rightNeg);
 
                 } else {
                     //trun right
                     if(abs_blockYaw - abs_error - 0.175 > 0)
-                        DriveController::instance()->sendDriveCommand(leftWheelMin, -rightWheelMin);
+                        DriveController::instance()->sendDriveCommand(leftPos, rightNeg);
                     else
-                        DriveController::instance()->sendDriveCommand(-leftWheelMin, rightWheelMin);
+                        DriveController::instance()->sendDriveCommand(leftNeg, rightPos);
                 }
             }
 
@@ -205,7 +213,7 @@ bool PickUpBehavior::tick(){
             float distance = hypot(initX - currX, initY - currY);
             cout << "PICKUP: distance left " << (blockDistance - distance) << " Curr dist: "<<distance<< endl;
 
-            if(blockDistance - distance <= 0.035){
+            if(blockDistance - distance <= 0.15){
                 currentStage = PICK_UP;
 
                 DriveController::instance()->stop();
@@ -233,7 +241,7 @@ bool PickUpBehavior::tick(){
                     ClawController::instance()->wristDownWithCube();
                     TargetHandler::instance()->setEnabled(false);
                     TargetHandler::instance()->setHasCube(true);
-                    SonarHandler::instance()->setEnable(true);
+                    //SonarHandler::instance()->setEnable(true);
                     currentStage = DROP;
                 } else {
                     targetLocked = false;
@@ -350,8 +358,59 @@ bool PickUpBehavior::tick(){
 
     }
 
+
     return false;
 
+}
+
+void PickUpBehavior::fix(bool left, bool right){
+    //get encoders
+	if(left){
+		cout << "PICKUPLEARN: "<<leftNeg<<" "<<rightPos<<endl;
+	} else {
+		cout << "PICKUPLEARN: "<<leftPos<<" "<<rightNeg<<endl;
+	}
+    int e_left = EncoderHandler::instance()->getEncoderLeft();
+    int e_right = EncoderHandler::instance()->getEncoderRight();
+    if(millis() - lastCheck > 1000){
+        if(prev_e_left != e_left){
+            if(fabs(e_left) < e_set){
+                if(!left){
+                    leftPos += 5;
+                } else {
+                    leftNeg -=5;
+                }
+            } else if (fabs(e_left) > e_set){
+                if(!left){
+                    leftPos -= 5;
+                } else {
+                    leftNeg +=5;
+                }
+            }
+
+            prev_e_left = e_left;
+        }
+
+        if(prev_e_right != e_right){
+            if(fabs(e_right) < e_set){
+                if(!right){
+                    rightPos += 5;
+                } else {
+                    rightNeg -=5;
+                }
+            } else if(fabs(e_right) > e_set){
+                if(!right){
+                    rightPos -= 5;
+                } else {
+                    rightNeg +=5;
+                }
+            }
+
+            prev_e_right = e_right;
+        }
+
+        lastCheck = millis();
+    }
 }
 
 

@@ -1,4 +1,5 @@
 #include <ros/ros.h>
+#include <sys/time.h>
 
 // ROS libraries
 #include <angles/angles.h>
@@ -35,6 +36,7 @@
 #include "controllers/DriveController.h"
 #include "controllers/ClawController.h"
 #include "controllers/OffsetController.h"
+#include "controllers/HiveController.h"
 
 #include "message_filters/subscriber.h"
 
@@ -56,6 +58,7 @@ void joyCmdHandler(const sensor_msgs::Joy::ConstPtr& message);
 void publishHeartBeatTimerEventHandler(const ros::TimerEvent& event);
 void publishStatusTimerEventHandler(const ros::TimerEvent& event);
 void tick(const ros::TimerEvent&); //main tick of the robot
+long millis();
 
 
 
@@ -99,6 +102,7 @@ bool collisionEnabled = false;
 
 bool init = false;
 
+long initTime = 0;
 
 
 int main(int argc, char **argv) {
@@ -151,9 +155,8 @@ int main(int argc, char **argv) {
     ClawController::instance()->registerPublishers(fingerAnglePublish, wristAnglePublish);
     OffsetController::instance()->registerPublishers(offsetPublish);
 
-    // Put the first behavior on stack
 
-    SMACS::instance()->push(new SearchBehavior());
+    SMACS::instance()->robotName = publishedName;
     //SMACS::instance()->push(new DropBehavior());
 
     // Disable the sonar because the robot is not doing anything yet
@@ -163,6 +166,8 @@ int main(int argc, char **argv) {
     ClawController::instance()->fingerOpen();
     // Put wist up
     ClawController::instance()->wristUp();
+
+    HiveController::instance()->CheckIn(publishedName);
 
     // Spin the node
     ros::spin();
@@ -175,24 +180,39 @@ void tick(const ros::TimerEvent&) {
     // If mode is auto
     if (currentMode == 2 || currentMode == 3) {
         if(!init){
+            // Set heading and offset the position
             float theta = IMUHandler::instance()->theta;
-            float x = 0 + (0.5 * cos(theta)); //(remainingGoalDist * cos(oldGoalLocation.theta));
-            float y = 0 + (0.5 * sin(theta)); //(remainingGoalDist * sin(oldGoalLocation.theta));
+            float x = 0 + (0.5 * cos(theta));
+            float y = 0 + (0.5 * sin(theta));
 
             OffsetController::instance()->sendOffsets(-x, -y, IMUHandler::instance()->w, IMUHandler::instance()->z);
+            OffsetController::instance()->centerX = 0;
+            OffsetController::instance()->centerY = 0;
+            OffsetController::instance()->centerTheta = theta;
+
+
+            // Put the first behavior on stack
+            SMACS::instance()->push(new SearchBehavior());
+
+            // Get round type
+            bool roundType = HiveController::instance()->roundType();
+            cout <<"ROUNDTYPE: "<< roundType<<endl;
 
             init = true;
+            initTime = millis();
+            // Sleep to let offset reset
         }
     	// If sonar handler is not enables
         if(!collisionEnabled){
-            SonarHandler::instance()->setEnable(true);
+            //SonarHandler::instance()->setEnable(true);
             collisionEnabled = true;
         }
 
 
-
-        // Tick the SMACS
-        SMACS::instance()->tick();
+        if(millis() - initTime > 2000){
+            // Tick the SMACS
+            SMACS::instance()->tick();
+        }
 
 
         //Flag that states that robot is in auto
@@ -267,7 +287,12 @@ void publishHeartBeatTimerEventHandler(const ros::TimerEvent&) {
 }
 
 
-
+long millis(){
+    struct timeval tp;
+    gettimeofday(&tp, 0);
+    long int ms = tp.tv_sec * 1000 + tp.tv_usec / 1000;
+    return ms;
+}
 
 
 

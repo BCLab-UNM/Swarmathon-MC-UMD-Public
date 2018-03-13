@@ -26,7 +26,7 @@ class AvoidCenterBehavior : public Behavior{
     bool turnLock = false;
 
     float x, y, theta;
-    float driveSpeed = 50;
+    float driveSpeed = 70;
 
     vector<Tag> centerTags;
 

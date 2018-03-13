@@ -12,6 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
   tf
   apriltags_ros
   swarmie_msgs
+  hive_srv
   )
 
 
@@ -96,7 +97,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-  CATKIN_DEPENDS geometry_msgs swarmie_msgs roscpp sensor_msgs std_msgs random_numbers tf apriltags_ros
+  CATKIN_DEPENDS geometry_msgs swarmie_msgs roscpp sensor_msgs std_msgs random_numbers tf apriltags_ros hive_srv
 )
 
 include_directories(
@@ -120,6 +121,7 @@ add_executable(
   src/controllers/PID.cpp
   src/controllers/OffsetController.cpp
   src/controllers/ClawController.cpp
+  src/controllers/HiveController.cpp
   src/behaviors/SearchForDropBehavior.cpp
   src/behaviors/AvoidCenterBehavior.cpp
 )

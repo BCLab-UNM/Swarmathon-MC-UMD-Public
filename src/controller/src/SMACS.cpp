@@ -32,6 +32,13 @@ void SMACS::pushWithMutex(Behavior* b){
                 return;
             }
         }
+        //if the top behavior is pickup and we are trying to avoid center
+        if(top->getType() == PICKUP_BEHAVIOR_TYPE && b->getType() == AVOID_CENTER_BEHAVIOR_TYPE){
+            //pop pickup
+            behaviorStack.pop();
+            ClawController::instance()->wristUp();
+        }
+
     }
 
     //stop the robot
@@ -65,7 +72,15 @@ void SMACS::push(Behavior* b){
                 return;
             }
         }
+        //if the top behavior is pickup and we are trying to avoid center
+        if(top->getType() == PICKUP_BEHAVIOR_TYPE && b->getType() == AVOID_CENTER_BEHAVIOR_TYPE){
+            //pop pickup
+            behaviorStack.pop();
+            ClawController::instance()->wristUp();
+        }
     }
+
+
 
     //stop the robot
     DriveController::instance()->stop();
