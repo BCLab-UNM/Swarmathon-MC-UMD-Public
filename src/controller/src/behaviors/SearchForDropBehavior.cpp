@@ -45,21 +45,29 @@ bool SearchForDropBehavior::tick(){
                         x = OdometryHandler::instance()->getX() + ((distance) * cos(theta));
                         y = OdometryHandler::instance()->getY() + ((distance) * sin(theta));
                     }
-                } else if(searchTry >= 1){
+                } else if(searchTry == 1){
                     if(DriveController::instance()->goToLocation(x, y)){
+                        distance = 2;
                         theta = OdometryHandler::instance()->getTheta() + M_PI_2;
                         x = OdometryHandler::instance()->getX() + ((distance) * cos(theta));
                         y = OdometryHandler::instance()->getY() + ((distance) * sin(theta));
                         searchTry++;
                     }
-                    if(searchTry % 2 == 0){
-                        distance+=0.25;
-                    }
 
-                    if(searchTry > 15){
-                        stage = GPS_TARGET;
-                    }
+                } else if(searchTry > 1){
+                    if(DriveController::instance()->goToLocation(x, y)){
+                        if(searchTry % 2 == 0)
+                            distance+=0.5;
 
+                        theta = OdometryHandler::instance()->getTheta() + M_PI_2;
+                        x = OdometryHandler::instance()->getX() + ((distance) * cos(theta));
+                        y = OdometryHandler::instance()->getY() + ((distance) * sin(theta));
+                        searchTry++;
+
+                        if(searchTry > 15){
+                            stage = GPS_TARGET;
+                        }
+                    }
                 }
 
                 break;

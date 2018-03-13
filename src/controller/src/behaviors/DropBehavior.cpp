@@ -41,7 +41,7 @@ bool DropBehavior::tick(){
             y = OdometryHandler::instance()->getY();
 
             //if the offset is greater than 2.5 meter
-            if(fabs(hypot(x - OffsetController::instance()->centerX, y - OffsetController::instance()->centerY)) > 2.5){
+            if(fabs(hypot(x - OffsetController::instance()->centerX, y - OffsetController::instance()->centerY)) > 1){
                 //reset odom
                 OffsetController::instance()->sendOffsets(0, 0, OdometryHandler::instance()->w, OdometryHandler::instance()->z);
             }
