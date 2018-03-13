@@ -114,9 +114,12 @@ bool PickUpBehavior::tick(){
                 if (blockYawError < 0){
                     //turn left
                     if(abs_blockYaw - abs_error > 0){
+			cout << "PICKUPDIR: left turn"<<endl;
                         DriveController::instance()->sendDriveCommand(leftNeg, rightPos);
                         fix(true, false);
                     }else{
+			cout << "PICKUPDIR: right turn"<<endl;
+
                         DriveController::instance()->sendDriveCommand(leftPos, rightNeg);
                         fix(false, true);
                     }
@@ -124,9 +127,13 @@ bool PickUpBehavior::tick(){
                 } else {
                     //trun right
                     if(abs_blockYaw - abs_error > 0){
-                        DriveController::instance()->sendDriveCommand(leftPos, rightNeg);
+                        cout << "PICKUPDIR: right turn"<<endl;
+
+			DriveController::instance()->sendDriveCommand(leftPos, rightNeg);
                         fix(false, true);
                     } else {
+			cout << "PICKUPDIR: left turn"<<endl;
+
                         DriveController::instance()->sendDriveCommand(leftNeg, rightPos);
                         fix(true, false);
                     }
@@ -185,18 +192,23 @@ bool PickUpBehavior::tick(){
             } else {
                 if (blockYawError < 0){
                     //turn left
-                    if(abs_blockYaw - abs_error - 0.175 > 0)
+                    if(abs_blockYaw - abs_error - 0.175 > 0){
+			cout << "PICKUPDIR: left pres turn"<<endl;
                         DriveController::instance()->sendDriveCommand(leftNeg, rightPos);
-                    else
+                    }else{
+			cout << "PICKUPDIR: right pres turn"<<endl;
                         DriveController::instance()->sendDriveCommand(leftPos, rightNeg);
-
+}
                 } else {
                     //trun right
-                    if(abs_blockYaw - abs_error - 0.175 > 0)
+                    if(abs_blockYaw - abs_error - 0.175 > 0){
+ 			cout << "PICKUPDIR: right pres turn"<<endl;
                         DriveController::instance()->sendDriveCommand(leftPos, rightNeg);
-                    else
+                    }else{
+ 			cout << "PICKUPDIR: left pres turn"<<endl;
                         DriveController::instance()->sendDriveCommand(leftNeg, rightPos);
-                }
+		}                
+}
             }
 
             break;
@@ -373,36 +385,36 @@ void PickUpBehavior::fix(bool left, bool right){
     int e_left = EncoderHandler::instance()->getEncoderLeft();
     int e_right = EncoderHandler::instance()->getEncoderRight();
     if(millis() - lastCheck > 1000){
-        if(prev_e_left != e_left){
+        if(prev_e_left != e_left || prev_e_left == 0){
             if(fabs(e_left) < e_set){
                 if(!left){
-                    leftPos += 5;
+                    leftPos += 1;
                 } else {
-                    leftNeg -=5;
+                    leftNeg -=1;
                 }
             } else if (fabs(e_left) > e_set){
                 if(!left){
-                    leftPos -= 5;
+                    leftPos -= 1;
                 } else {
-                    leftNeg +=5;
+                    leftNeg +=1;
                 }
             }
 
             prev_e_left = e_left;
         }
 
-        if(prev_e_right != e_right){
+        if(prev_e_right != e_right || prev_e_right == 0){
             if(fabs(e_right) < e_set){
                 if(!right){
-                    rightPos += 5;
+                    rightPos += 1;
                 } else {
-                    rightNeg -=5;
+                    rightNeg -=1;
                 }
             } else if(fabs(e_right) > e_set){
                 if(!right){
-                    rightPos -= 5;
+                    rightPos -= 1;
                 } else {
-                    rightNeg +=5;
+                    rightNeg +=1;
                 }
             }
 
