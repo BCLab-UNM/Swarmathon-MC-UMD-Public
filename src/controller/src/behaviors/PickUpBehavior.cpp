@@ -111,16 +111,16 @@ bool PickUpBehavior::tick(){
                 if (blockYawError < 0){
                     //turn left
                     if(abs_blockYaw - abs_error > 0)
-                        DriveController::instance()->sendDriveCommand(-leftWheelMin, rightWheelMin);
+                        DriveController::instance()->sendDriveCommand(-left, right);
                     else
-                        DriveController::instance()->sendDriveCommand(leftWheelMin, -rightWheelMin);
+                        DriveController::instance()->sendDriveCommand(left, -right);
 
                 } else {
                     //trun right
                     if(abs_blockYaw - abs_error > 0)
-                        DriveController::instance()->sendDriveCommand(leftWheelMin, -rightWheelMin);
+                        DriveController::instance()->sendDriveCommand(left, -right);
                     else
-                        DriveController::instance()->sendDriveCommand(-leftWheelMin, rightWheelMin);
+                        DriveController::instance()->sendDriveCommand(-left, right);
                 }
             }
 
@@ -180,16 +180,16 @@ bool PickUpBehavior::tick(){
                 if (blockYawError < 0){
                     //turn left
                     if(abs_blockYaw - abs_error - 0.175 > 0)
-                        DriveController::instance()->sendDriveCommand(-leftWheelMin, rightWheelMin);
+                        DriveController::instance()->sendDriveCommand(-left, right);
                     else
-                        DriveController::instance()->sendDriveCommand(leftWheelMin, -rightWheelMin);
+                        DriveController::instance()->sendDriveCommand(left, -right);
 
                 } else {
                     //trun right
                     if(abs_blockYaw - abs_error - 0.175 > 0)
-                        DriveController::instance()->sendDriveCommand(leftWheelMin, -rightWheelMin);
+                        DriveController::instance()->sendDriveCommand(left, -right);
                     else
-                        DriveController::instance()->sendDriveCommand(-leftWheelMin, rightWheelMin);
+                        DriveController::instance()->sendDriveCommand(-left, right);
                 }
             }
 

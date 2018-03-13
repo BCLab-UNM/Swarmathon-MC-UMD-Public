@@ -44,7 +44,9 @@ class PickUpBehavior : public Behavior{
 
     float driveBackDist = 0.15;
 
-    int driveSpeed = 70;
+    int driveSpeed = 40;
+    float left = 40;
+    float right = 40;
 
     bool waiting;
     time_t initTime;
