@@ -9,6 +9,7 @@
 #include "PickUpBehavior.h"
 #include "DriveBehavior.h"
 #include "SearchAlgorithm.h"
+#include "SearchAlgorithmSixRovers.h"
 
 #include "ros/ros.h"
 #include "../controllers/DriveController.h"
