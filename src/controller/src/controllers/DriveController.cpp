@@ -130,18 +130,23 @@ bool DriveController::goToLocation(float x, float y){
                 // Distance driven
                 float distance = hypot(currentDrive.x - currentLocation.x, currentDrive.y - currentLocation.y);
 
+                if(fabs(errorYaw) < rotateOnlyAngleTolerance){
+                    // goal not yet reached drive while maintaining proper heading.
+                    if (distance < waypointTolerance){
+                        constPID((searchVelocity-linear) ,0, searchVelocity, 0);
+                    } else {
+                        stop();
+                        stateMachineState = STATE_MACHINE_ROTATE;
+                        isDistanceTurnedInit = false;
 
-                // goal not yet reached drive while maintaining proper heading.
-                if (fabs(errorYaw) < rotateOnlyAngleTolerance &&  distance > waypointTolerance){
-                    constPID((searchVelocity-linear) ,0, searchVelocity, 0);
+                        // return true because drive is completed
+                        return true;
+                    }
                 } else {
-                    stop();
-                    stateMachineState = STATE_MACHINE_ROTATE;
-                    isDistanceTurnedInit = false;
-
-                    // return true because drive is completed 
-                    return true;
+                    stateMachineState = FINAL_ROTATE;
                 }
+
+
                 break;
             }
             default:
