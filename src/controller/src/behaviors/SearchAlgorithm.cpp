@@ -23,15 +23,18 @@ void SearchAlgorithmBehavior::determineRovers(){
         {
             TargetHandler::instance()->setEnabled(false);
             theta = OdometryHandler::instance()->getTheta();
-            // This ensures that the theta value used to rotate (rotational transformation) the algorithm are precice. This makes the transformation precise.
+
             if (theta < M_PI/4 && theta > -M_PI/4){
                 initial_theta = 0.0; }
             else if (theta > M_PI/4 && theta < 3*M_PI/4){
                 initial_theta = M_PI/2; }
-            else if ((theta > 3*M_PI/4 && theta < 5*M_PI/4)||(theta > -3*M_PI/4 && theta < -5*M_PI/4)){
+            else if ((theta > 3*M_PI/4 && theta <= M_PI) || (theta >= -M_PI && theta < -3*M_PI/4){
                 initial_theta = M_PI; }
-            else if (theta > 5*M_PI/4 && theta < 7*M_PI/4){
-            initial_theta = 3*M_PI/2; }
+            else if (theta > -3*M_PI/4 && theta < -M_PI/4){
+                initial_theta = -M_PI/2; }
+            else{
+                cout<<"Error in finding initial theta"<<endl;
+            }
 
             distance = 0.5;
             x = OdometryHandler::instance()->getX() + ((distance) * cos(theta));
