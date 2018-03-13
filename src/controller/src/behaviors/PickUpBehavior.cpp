@@ -365,7 +365,11 @@ bool PickUpBehavior::tick(){
 
 void PickUpBehavior::fix(bool left, bool right){
     //get encoders
-    cout << "PICKUPLEARN: "<<left<<" "<<right<<endl;
+	if(left){
+		cout << "PICKUPLEARN: "<<leftNeg<<" "<<rightPos<<endl;
+	} else {
+		cout << "PICKUPLEARN: "<<leftPos<<" "<<rightNeg<<endl;
+	}
     int e_left = EncoderHandler::instance()->getEncoderLeft();
     int e_right = EncoderHandler::instance()->getEncoderRight();
     if(millis() - lastCheck > 1000){

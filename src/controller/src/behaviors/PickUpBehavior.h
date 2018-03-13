@@ -46,7 +46,7 @@ class PickUpBehavior : public Behavior{
 
     int driveSpeed = 30;
 
-    int e_set = 200;
+    int e_set = 300;
 
     static int leftPos;
     static int rightPos;
