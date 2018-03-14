@@ -3,6 +3,7 @@ enum{
 	AvoidBehavior
 	PickUpBehavior
 	SearchAlgorithmBehavior
+	SearchAlgorithmRelativeBehavior
 	
 	TestBehavior
 }

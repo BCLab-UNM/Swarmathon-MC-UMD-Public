@@ -21,10 +21,9 @@ void SearchAlgorithmBehavior::determineRovers(){
 
         if (initialDrive)
         {
-            TargetHandler::instance()->setEnabled(false);
-            theta = OdometryHandler::instance()->getTheta();
+            initial_theta = OdometryHandler::instance()->getTheta();
 
-            if (theta < M_PI/4 && theta > -M_PI/4){
+            /*if (theta < M_PI/4 && theta > -M_PI/4){
                 initial_theta = 0.0; }
             else if (theta > M_PI/4 && theta < 3*M_PI/4){
                 initial_theta = M_PI/2; }
@@ -34,11 +33,11 @@ void SearchAlgorithmBehavior::determineRovers(){
                 initial_theta = -M_PI/2; }
             else{
                 cout<<"Error in finding initial theta"<<endl;
-            }
+            }*/
 
             distance = 0.5;
-            x = OdometryHandler::instance()->getX() + ((distance) * cos(theta));
-            y = OdometryHandler::instance()->getY() + ((distance) * sin(theta));
+            x = OdometryHandler::instance()->getX() + ((distance) * cos(initial_theta));
+            y = OdometryHandler::instance()->getY() + ((distance) * sin(initial_theta));
             initialDrive = false;
         }
         else if (initialCheck){
@@ -86,8 +85,13 @@ void SearchAlgorithmBehavior::determineRovers(){
                 y = xi*sin(initial_theta) + yi*cos(initial_theta);
 
                 cout<<"AlgorithmAPath: "<<theta<<"\t1 inittheta: "<<initial_theta<<"\tX: "<<x<<"\tY: "<<y<<endl;
-                first = false;
-                second = true;
+                if (xiterator <= -2.0){
+                    second = false;
+                    first = false;
+                } else {
+                    first = false;
+                    second = true;
+                }
             } else if(second){
                 TargetHandler::instance()->setEnabled(true);
                 xi = xiterator;
@@ -98,8 +102,36 @@ void SearchAlgorithmBehavior::determineRovers(){
 
                 xiterator = xiterator - 0.5;
                 cout<<"AlgorithmAPath: "<<theta<<"\t2 inittheta: "<<initial_theta<<"\tX: "<<x<<"\tY: "<<y<<endl;
-                first = true;
-                second = false;
+                if (xiterator <= -2.0){
+                    first = false;
+                    second = false;
+                } else {
+                    first = true;
+                    second = false;
+                }
+            } else if(third){
+                xi = xiterator;
+                yi = (-9.0/sqrt(3.0)) - sqrt(3.0)/2.0;
+
+                x = xi*cos(initial_theta) - yi*sin(initial_theta);
+                y = xi*sin(initial_theta) + yi*cos(initial_theta);
+
+                xiterator = xiterator - 0.5;
+                cout<<"AlgorithmAPath: "<<theta<<"\t3 inittheta: "<<initial_theta<<"\tX: "<<x<<"\tY: "<<y<<endl;
+
+                third = false;
+                fourth = true;
+            } else if(fourth){
+                xi = xiterator;
+                yi = (9.0/sqrt(3.0)) + sqrt(3.0)/2.0;
+
+                x = xi*cos(initial_theta) - yi*sin(initial_theta);
+                y = xi*sin(initial_theta) + yi*cos(initial_theta);
+
+                cout<<"AlgorithmAPath: "<<theta<<"\t4 inittheta: "<<initial_theta<<"\tX: "<<x<<"\tY: "<<y<<endl;
+                
+                third = true;
+                fourth = false;
             }
         }
         else if (AlgorithmB){
@@ -112,10 +144,14 @@ void SearchAlgorithmBehavior::determineRovers(){
                 y = xi*sin(initial_theta) + yi*cos(initial_theta);
 
                 cout<<"AlgorithmBPath: "<<theta<<"\t1 inittheta: "<<initial_theta<<"\tX: "<<x<<"\tY: "<<y<<endl;
-                first = false;
-                second = true;
-            }
-            else if(second){
+                if (yiterator >= 2.5){
+                    first = false;
+                    second = false;
+                } else {
+                    first = false;
+                    second = true;
+                }
+            } else if(second){
                 TargetHandler::instance()->setEnabled(true);
                 xi = 0.5;
                 yi = -2.0*yiterator;
@@ -127,6 +163,8 @@ void SearchAlgorithmBehavior::determineRovers(){
                 cout<<"AlgorithmBPath: "<<theta<<"\t2 inittheta: "<<initial_theta<<"\tX: "<<x<<"\tY: "<<y<<endl;
                 first = true;
                 second = false;
+            } else if(third){
+                
             }
         }
 
@@ -165,6 +203,8 @@ void SearchAlgorithmBehavior::determineRovers(){
                 y = xi*sin(initial_theta) + yi*cos(initial_theta);
 
                 cout<<"AlgorithmDefaultPath: "<<theta<<"\t1 inittheta: "<<initial_theta<<"\tX: "<<x<<"\tY: "<<y<<endl;
+
+
                 first = false;
                 second = true;
             } else if(second){

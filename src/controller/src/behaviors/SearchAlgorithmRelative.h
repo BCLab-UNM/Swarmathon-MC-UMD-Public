@@ -1,12 +1,12 @@
-#ifndef SEARCH_ALGORITHM_BEHAVIOR_H
-#define SEARCH_ALGORITHM_BEHAVIOR_H
+#ifndef SEARCH_ALGORITHM_RELATIVE_BEHAVIOR_H
+#define SEARCH_ALGORITHM_RELATIVE_BEHAVIOR_H
 
 #include "BehaviorInterface.h"
 #include "../controllers/DriveController.h"
 #include <cmath>
 #include <math.h>
 
-class SearchAlgorithmBehavior: public Behavior{
+class SearchAlgorithmRelativeBehavior: public Behavior{
     bool initialize = true;
     bool first_checking=true;
     bool initialDrive = true;
@@ -14,15 +14,20 @@ class SearchAlgorithmBehavior: public Behavior{
     bool AlgorithmA = false;
     bool AlgorithmB = false;
     bool AlgorithmC = false;
+    bool initial = true;
     bool first = true;
     bool second = true;
     bool third = true;
-    bool fourth = true;
 
     float initial_theta;
 
     float theta;
     float distance;
+
+    //These are distance for trigonometric sides
+    float distance1;
+    float distance2;
+
     float left;
     float center;
     float right;
@@ -36,6 +41,8 @@ class SearchAlgorithmBehavior: public Behavior{
     // x and y iterator
     float xiterator;
     float yiterator;
+
+    float iterator;
 
     int msleep(unsigned long milisec)
     { //Funvtion to stop the program for miliseconds
@@ -53,9 +60,10 @@ class SearchAlgorithmBehavior: public Behavior{
     int iterCount = 0;
 
     public:
-        SearchAlgorithmBehavior() : Behavior(SEARCH_ALGORITHM_BEHAVIOR_TYPE){
+        SearchAlgorithmRelativeBehavior() : Behavior(SEARCH_ALGORITHM_RELATIVE_BEHAVIOR_TYPE){
             xiterator = 0.0;
             yiterator = 0.5;
+            iterator = 1.0;
         }
         bool tick();
         void determineRovers();
