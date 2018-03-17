@@ -253,8 +253,10 @@ bool PickUpBehavior::tick(){
                     ClawController::instance()->wristDownWithCube();
                     TargetHandler::instance()->setEnabled(false);
                     TargetHandler::instance()->setHasCube(true);
-                    //SonarHandler::instance()->setEnable(true);
-                    currentStage = DROP;
+                    //get x and y
+                    initX = OdometryHandler::instance()->getX();
+                    initY = OdometryHandler::instance()->getY();
+                    currentStage = DRIVE_BACK;
                 } else {
                     targetLocked = false;
                     if(TargetHandler::instance()->getNumberOfCubeTags() > 0){
@@ -296,8 +298,10 @@ bool PickUpBehavior::tick(){
                         ClawController::instance()->wristDownWithCube();
                         TargetHandler::instance()->setEnabled(false);
                         TargetHandler::instance()->setHasCube(true);
-                        SonarHandler::instance()->setEnable(true);
-                        currentStage = DROP;
+                        //get x and y
+                        initX = OdometryHandler::instance()->getX();
+                        initY = OdometryHandler::instance()->getY();
+                        currentStage = DRIVE_BACK;
                     } else {
                         initX = OdometryHandler::instance()->getX();
                         initY = OdometryHandler::instance()->getY();
@@ -353,19 +357,55 @@ bool PickUpBehavior::tick(){
 
             break;
         }
-        case DROP:
+        case DRIVE_BACK:
         {
-            //Get current x and y
+
+            float currX = OdometryHandler::instance()->getX();
+            float currY = OdometryHandler::instance()->getY();
+
+            //Drive and count how far we have driven
+            float distance = hypot(initX - currX, initY - currY);
+            cout << "PICKUP: distance drove back " << (distance) << " out of : "<<driveBackDist<< endl;
+
+            if(distance >= driveBackDist){
+                DriveController::instance()->stop();
+                currentStage = TURN_TO_BASE;
+            } else {
+                DriveController::instance()->sendDriveCommand(-driveSpeed, -driveSpeed);
+            }
+            break;
+        }
+
+        case TURN_TO_BASE:
+        {
+            //turn to face the base
+            float baseX = OffsetController::instance()->centerX;
+            float baseY = OffsetController::instance()->centerY;
             float x = OdometryHandler::instance()->getX();
             float y = OdometryHandler::instance()->getY();
+            //calculate base theta from current location
+            baseTheta = atan2(baseY - y, baseX - x);
 
-            //Put return behavior in the stack
-            SMACS::instance()->pushNext(new DriveBehavior(x, y));
-            //Put drop behavior to the stack
-            SMACS::instance()->pushNext(new SearchForDropBehavior());
+            currentStage = DROP;
+            break;
+        }
+        case DROP:
+        {
+            if(DriveController::instance()->turnToTheta(baseTheta)){
+                //Get current x and y
+                float x = OdometryHandler::instance()->getX();
+                float y = OdometryHandler::instance()->getY();
+                //Put return behavior in the stack
+                SMACS::instance()->pushNext(new DriveBehavior(x, y));
+                //Put drop behavior to the stack
+                SMACS::instance()->pushNext(new SearchForDropBehavior());
 
-            //return true to pop pick up from stack and execute DropBehavior()
-            return true;
+                SonarHandler::instance()->setEnable(true);
+
+                //return true to pop pick up from stack and execute DropBehavior()
+                return true;
+            }
+            break;
         }
 
     }
