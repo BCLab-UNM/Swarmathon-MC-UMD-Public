@@ -5,7 +5,9 @@
 bool SearchAlgorithmBehavior::tick(){
         if(initialDrive){
             determineRovers();
-        } else {
+        } else if(turnAround) {
+            determineRovers();
+        }else{
             cout<<"SEARCH: Drive"<<endl;
             if(DriveController::instance()->goToLocation(x, y)){
                 cout<<"SEARCH: NEW Point"<<endl;

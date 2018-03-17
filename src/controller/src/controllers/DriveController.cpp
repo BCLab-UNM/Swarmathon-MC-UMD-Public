@@ -294,27 +294,22 @@ bool DriveController::turnToTheta(float theta){
     //Calculate absolute value of angle
     float abs_error = fabs(angles::shortest_angular_distance(currTheta, theta));
 
-    // If we have not completed the turn
-    // TODO: This needs fixing because there might be a case where we overshoot
     if(abs_error >= finalRotationTolerance){
         cout << "DRIVE: correction angle: " << abs_error<<endl;
         //find out if left or right
         //if need to turn right
         if (errorYaw < 0){
             cout << "DRIVE: RightMin: "<<rightMin<<endl;
-            sendDriveCommand(leftMin, -rightMin);
-            left = leftMin;
-            right = -rightMin;
+            sendDriveCommand(rightMin, -rightMin);
         } else {
             cout << "DRIVE: LeftMin: " << leftMin <<endl;
-            sendDriveCommand(-leftMin, rightMin);
-            left = -leftMin;
-            right = rightMin;
+            sendDriveCommand(-leftMin, leftMin);
         }
 
         return false;
     } else {
-        return true;
+         stop();
+         return true;
     }
 }
 
