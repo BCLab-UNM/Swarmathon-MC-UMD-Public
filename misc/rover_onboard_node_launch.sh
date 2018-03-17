@@ -12,13 +12,15 @@ pkill ekf_localization
 pkill diagnostics
 pkill static_transform_publisher
 
+echo "Done killin "
+
 source "../devel/setup.bash"
 export GAZEBO_MODEL_PATH="../simulation/models"
 export GAZEBO_PLUGIN_PATH="../build/gazebo_plugins"
 
 #Point to ROS master on the network
 echo "point to ROS master on the network"
-if [ -z "$2" ]
+if [ -z "$1" ]
 then
     echo "Usage: ./rover_onboard_node_launch.sh master_hostname calibration_location"
     exit 1
