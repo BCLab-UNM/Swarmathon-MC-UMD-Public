@@ -19,6 +19,8 @@ class SearchAlgorithmBehavior: public Behavior{
     bool third = true;
     bool fourth = true;
 
+    bool turnAround = true;
+
     float initial_theta;
 
     float theta;

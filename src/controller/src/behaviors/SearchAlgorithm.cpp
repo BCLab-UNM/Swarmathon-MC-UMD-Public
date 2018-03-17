@@ -21,7 +21,7 @@ void SearchAlgorithmBehavior::determineRovers(){
 
         if (initialDrive)
         {
-	    TargetHandler::instance()->setEnabled(false);
+            TargetHandler::instance()->setEnabled(false);
             SonarHandler::instance()->setEnable(false);
             initial_theta = OdometryHandler::instance()->getTheta();
 
@@ -70,12 +70,23 @@ void SearchAlgorithmBehavior::determineRovers(){
             }
             initialCheck = false;
             first_checking=false;
+
+            theta = OdometryHandler::instance()->getTheta() + M_PI;
             //run_algorithm=true;
-    } }
+        }
+    }
+    else if(turnAround)
+    {
+        if(DriveController::instance()->turnToTheta(theta)){
+            turnAround = false;
+            TargetHandler::instance()->setEnabled(true);
+            SonarHandler::instance()->setEnable(true);
+        }
+    }
 
 // Now rover know what algorithm should be run, it starts running the algorithm
     else
-{
+    {
 
         if (AlgorithmA){
         
@@ -95,7 +106,6 @@ void SearchAlgorithmBehavior::determineRovers(){
                     second = true;
                 }
             } else if(second){
-                TargetHandler::instance()->setEnabled(true);
                 xi = xiterator;
                 yi = (3.0/sqrt(3.0))*xiterator - sqrt(3.0)/2.0;
 

@@ -159,7 +159,7 @@ int main(int argc, char **argv) {
     // Put the first behavior on stack
 
     //SMACS::instance()->push(new SearchBehavior());              TESTING PURPOSES ONLY
-    SMACS::instance()->push(new SearchAlgorithmBehavior());
+    //SMACS::instance()->push(new SearchAlgorithmBehavior());
     //SMACS::instance()->push(new SearchAlgorithmRelativeBehavior());
 
     // Disable the sonar because the robot is not doing anything yet
@@ -195,7 +195,7 @@ void tick(const ros::TimerEvent&) {
 
 
             // Put the first behavior on stack
-            SMACS::instance()->push(new SearchBehavior());
+            SMACS::instance()->push(new SearchAlgorithmBehavior());
 
             // Get round type
             bool roundType = HiveController::instance()->roundType();
