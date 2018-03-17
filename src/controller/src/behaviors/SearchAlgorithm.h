@@ -20,6 +20,7 @@ class SearchAlgorithmBehavior: public Behavior{
     bool fourth = true;
 
     bool turnAround = true;
+    bool droveToLocation = true;
 
     float initial_theta;
 
