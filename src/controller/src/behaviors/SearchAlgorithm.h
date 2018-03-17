@@ -20,6 +20,7 @@ class SearchAlgorithmBehavior: public Behavior{
     bool fourth = true;
 
     bool turnAround = true;
+    bool droveToLocation = true;
 
     float initial_theta;
 
@@ -40,6 +41,7 @@ class SearchAlgorithmBehavior: public Behavior{
     float yiterator;
 
     float spacing;
+    long initTime;
 
     int msleep(unsigned long milisec)
     { //Funvtion to stop the program for miliseconds

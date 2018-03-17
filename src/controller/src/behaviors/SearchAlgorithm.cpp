@@ -5,7 +5,13 @@
 bool SearchAlgorithmBehavior::tick(){
         if(initialDrive){
             determineRovers();
-        } else {
+        } else if (droveToLocation){
+            if(DriveController::instance()->goToLocation(x, y)){
+                droveToLocation = false;
+            }
+        }else if(turnAround) {
+            determineRovers();
+        }else{
             cout<<"SEARCH: Drive"<<endl;
             if(DriveController::instance()->goToLocation(x, y)){
                 cout<<"SEARCH: NEW Point"<<endl;
@@ -41,41 +47,44 @@ void SearchAlgorithmBehavior::determineRovers(){
             x = OdometryHandler::instance()->getX() + ((distance) * cos(initial_theta));
             y = OdometryHandler::instance()->getY() + ((distance) * sin(initial_theta));
             initialDrive = false;
+            initTime = millis();
         }
         else if (initialCheck){
-            msleep(2000); //this function is temprorary defined in searchalgorithm.h file. it makes it stop for 2 seconds
-            left = SonarHandler::instance()->getSonarLeft();
-            right = SonarHandler::instance()->getSonarRight();
-            center = SonarHandler::instance()->getSonarCenter();
+            if(millis() - initTime >= 10){
+                //msleep(2000); //this function is temprorary defined in searchalgorithm.h file. it makes it stop for 2 seconds
+                left = SonarHandler::instance()->getSonarLeft();
+                right = SonarHandler::instance()->getSonarRight();
+                center = SonarHandler::instance()->getSonarCenter();
 
-            if(center > 2.1){
-                AlgorithmA = true;
-                //Yellow, Aeness on the simulator by default
+                if(center > 2.1){
+                    AlgorithmA = true;
+                    //Yellow, Aeness on the simulator by default
 
-                cout<<"Algorithm: A"<<endl;
+                    cout<<"Algorithm: A"<<endl;
+                }
+
+                else if(left < center && left < right && center < 2){
+                    AlgorithmB = true;
+                    //White, Ajax on the simulator by default
+
+                    cout<<"Algorithm: B"<<endl;
+                }
+
+                else if(right < center && right < left && center < 2){
+                    //Black/green, Achilies on the simulator by defeault
+                    AlgorithmC = true;
+
+                    cout<<"Algorithm: C"<<endl;
+                }
+                initialCheck = false;
+                first_checking=false;
+
+                theta = OdometryHandler::instance()->getTheta() + M_PI;
+                //run_algorithm=true;
             }
-
-            else if(left < center && left < right && center < 2){
-                AlgorithmB = true;
-                //White, Ajax on the simulator by default
-
-                cout<<"Algorithm: B"<<endl;
-            }
-
-            else if(right < center && right < left && center < 2){
-                //Black/green, Achilies on the simulator by defeault
-                AlgorithmC = true;
-
-                cout<<"Algorithm: C"<<endl;
-            }
-            initialCheck = false;
-            first_checking=false;
-
-            theta = OdometryHandler::instance()->getTheta() + M_PI;
-            //run_algorithm=true;
         }
     }
-/*    else if(turnAround)
+    else if(turnAround)
     {
         if(DriveController::instance()->turnToTheta(theta)){
             turnAround = false;
@@ -83,7 +92,7 @@ void SearchAlgorithmBehavior::determineRovers(){
             SonarHandler::instance()->setEnable(true);
         }
     }
-*/
+
 // Now rover know what algorithm should be run, it starts running the algorithm
     else
     {
