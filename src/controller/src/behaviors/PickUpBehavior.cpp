@@ -253,7 +253,10 @@ bool PickUpBehavior::tick(){
                     ClawController::instance()->wristDownWithCube();
                     TargetHandler::instance()->setEnabled(false);
                     TargetHandler::instance()->setHasCube(true);
-                    currentStage = TURN_TO_BASE;
+                    //get x and y
+                    initX = OdometryHandler::instance()->getX();
+                    initY = OdometryHandler::instance()->getY();
+                    currentStage = DRIVE_BACK;
                 } else {
                     targetLocked = false;
                     if(TargetHandler::instance()->getNumberOfCubeTags() > 0){
@@ -295,7 +298,10 @@ bool PickUpBehavior::tick(){
                         ClawController::instance()->wristDownWithCube();
                         TargetHandler::instance()->setEnabled(false);
                         TargetHandler::instance()->setHasCube(true);
-                        currentStage = TURN_TO_BASE;
+                        //get x and y
+                        initX = OdometryHandler::instance()->getX();
+                        initY = OdometryHandler::instance()->getY();
+                        currentStage = DRIVE_BACK;
                     } else {
                         initX = OdometryHandler::instance()->getX();
                         initY = OdometryHandler::instance()->getY();
@@ -351,6 +357,25 @@ bool PickUpBehavior::tick(){
 
             break;
         }
+        case DRIVE_BACK:
+        {
+
+            float currX = OdometryHandler::instance()->getX();
+            float currY = OdometryHandler::instance()->getY();
+
+            //Drive and count how far we have driven
+            float distance = hypot(initX - currX, initY - currY);
+            cout << "PICKUP: distance drove back " << (distance) << " out of : "<<driveBackDist<< endl;
+
+            if(distance >= driveBackDist){
+                DriveController::instance()->stop();
+                currentStage = TURN_TO_BASE;
+            } else {
+                DriveController::instance()->sendDriveCommand(-driveSpeed, -driveSpeed);
+            }
+            break;
+        }
+
         case TURN_TO_BASE:
         {
             //turn to face the base

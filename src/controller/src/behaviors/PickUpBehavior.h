@@ -25,6 +25,7 @@ class PickUpBehavior : public Behavior{
         PICK_UP,
         RETRY,
         DONE,
+        DRIVE_BACK,
         TURN_TO_BASE,
         DROP
     };
