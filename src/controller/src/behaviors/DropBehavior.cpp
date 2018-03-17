@@ -67,15 +67,24 @@ bool DropBehavior::tick(){
                 // Drive back
                 DriveController::instance()->sendDriveCommand(-slowDrive, -slowDrive);
             } else {
-                 TargetHandler::instance()->setHasCube(false);
-                 DriveController::instance()->stop();
-                 TargetHandler::instance()->setEnabled(true);
-                 SonarHandler::instance()->setEnable(true);
-                 return true;
+                stage = TURN;
+                theta = OdometryHandler::instance()->getTheta() + M_PI;
             }
 
             break;
         }
+        case TURN:
+        {
+            if(DriveController::instance()->turnToTheta(theta)){
+                TargetHandler::instance()->setHasCube(false);
+                DriveController::instance()->stop();
+                TargetHandler::instance()->setEnabled(true);
+                SonarHandler::instance()->setEnable(true);
+                return true;
+            }
+            break;
+        }
+
     }
 
     return false;

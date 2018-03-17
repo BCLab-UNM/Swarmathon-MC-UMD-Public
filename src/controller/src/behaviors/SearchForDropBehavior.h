@@ -17,6 +17,7 @@ class SearchForDropBehavior : public Behavior{
         GPS_TARGET,
         SEARCH,
         ASK,
+        DRIVE,
         DROP
     };
 
