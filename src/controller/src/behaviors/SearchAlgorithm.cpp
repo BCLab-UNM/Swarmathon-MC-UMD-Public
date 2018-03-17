@@ -121,7 +121,7 @@ void SearchAlgorithmBehavior::determineRovers(){
                 x = xi*cos(initial_theta) - yi*sin(initial_theta);
                 y = xi*sin(initial_theta) + yi*cos(initial_theta);
 
-                xiterator = xiterator - 0.5;
+                xiterator = xiterator - spacing;
                 cout<<"AlgorithmAPath: "<<theta<<"\t2 inittheta: "<<initial_theta<<"\tX: "<<x<<"\tY: "<<y<<endl;
                     first = true;
                     second = false;
@@ -132,7 +132,7 @@ void SearchAlgorithmBehavior::determineRovers(){
                 x = xi*cos(initial_theta) - yi*sin(initial_theta);
                 y = xi*sin(initial_theta) + yi*cos(initial_theta);
 
-                xiterator = xiterator - 0.5;
+                xiterator = xiterator - spacing;
                 cout<<"AlgorithmAPath: "<<theta<<"\t3 inittheta: "<<initial_theta<<"\tX: "<<x<<"\tY: "<<y<<endl;
 
                 third = false;
@@ -175,7 +175,7 @@ void SearchAlgorithmBehavior::determineRovers(){
                 x = xi*cos(initial_theta) - yi*sin(initial_theta);
                 y = xi*sin(initial_theta) + yi*cos(initial_theta);
 
-                yiterator = yiterator + 0.5;
+                yiterator = yiterator + spacing;
                 cout<<"AlgorithmBPath: "<<theta<<"\t2 inittheta: "<<initial_theta<<"\tX: "<<x<<"\tY: "<<y<<endl;
                 first = true;
                 second = false;
@@ -186,7 +186,7 @@ void SearchAlgorithmBehavior::determineRovers(){
                 x = xi*cos(initial_theta) - yi*sin(initial_theta);
                 y = xi*sin(initial_theta) + yi*cos(initial_theta);
 
-                xiterator = xiterator + 0.5;
+                xiterator = xiterator + spacing;
                 cout<<"AlgorithmBPath: "<<theta<<"\t3 inittheta: "<<initial_theta<<"\tX: "<<x<<"\tY: "<<y<<endl;
                 third = false;
                 fourth = true;
@@ -222,7 +222,7 @@ void SearchAlgorithmBehavior::determineRovers(){
             x = xi*cos(initial_theta) - yi*sin(initial_theta);
             y = xi*sin(initial_theta) + yi*cos(initial_theta);
 
-            yiterator = yiterator + 0.5;
+            yiterator = yiterator + spacing;
             cout<<"AlgorithmCPath: "<<theta<<"\t2 inittheta: "<<initial_theta<<"\tX: "<<x<<"\tY: "<<y<<endl;
             if (yiterator >= 3.0){
                 first = false;
@@ -238,8 +238,8 @@ void SearchAlgorithmBehavior::determineRovers(){
             x = xi*cos(initial_theta) - yi*sin(initial_theta);
             y = xi*sin(initial_theta) + yi*cos(initial_theta);
 
-            xiterator = xiterator + 0.5;
-            cout<<"AlgorithmBPath: "<<theta<<"\t3 inittheta: "<<initial_theta<<"\tX: "<<x<<"\tY: "<<y<<endl;
+            xiterator = xiterator + spacing;
+            cout<<"AlgorithmCPath: "<<theta<<"\t3 inittheta: "<<initial_theta<<"\tX: "<<x<<"\tY: "<<y<<endl;
             third = false;
             fourth = true;
         } else if(fourth){
@@ -249,59 +249,61 @@ void SearchAlgorithmBehavior::determineRovers(){
             x = xi*cos(initial_theta) - yi*sin(initial_theta);
             y = xi*sin(initial_theta) + yi*cos(initial_theta);
             
-            cout<<"AlgorithmBPath: "<<theta<<"\t4 inittheta: "<<initial_theta<<"\tX: "<<x<<"\tY: "<<y<<endl;
+            cout<<"AlgorithmCPath: "<<theta<<"\t4 inittheta: "<<initial_theta<<"\tX: "<<x<<"\tY: "<<y<<endl;
             third = true;
             fourth = false;
         }
     }
         else { //default algorithm should be here, I chose AlgorithmB for now
 
+           
             if(first){
-                xi = 0.5;
-                yi = 2.0*yiterator;
-    
+                xi = xiterator;
+                yi = (-3.0/sqrt(3.0))*xiterator + sqrt(3.0)/2.0;
+
                 x = xi*cos(initial_theta) - yi*sin(initial_theta);
                 y = xi*sin(initial_theta) + yi*cos(initial_theta);
-                
-                cout<<"AlgorithmCPath: "<<theta<<"\t1 inittheta: "<<initial_theta<<"\tX: "<<x<<"\tY: "<<y<<endl; 
-                first = false;
-                second = true;
-            } else if(second){
-                TargetHandler::instance()->setEnabled(true);
-                xi = (-3.0/sqrt(3.0))*yiterator + 0.5;
-                yi = -yiterator;
-    
-                x = xi*cos(initial_theta) - yi*sin(initial_theta);
-                y = xi*sin(initial_theta) + yi*cos(initial_theta);
-    
-                yiterator = yiterator + 0.5;
-                cout<<"AlgorithmCPath: "<<theta<<"\t2 inittheta: "<<initial_theta<<"\tX: "<<x<<"\tY: "<<y<<endl;
-                if (yiterator >= 3.0){
-                    first = false;
+
+                cout<<"AlgorithmAPath: "<<theta<<"\t1 inittheta: "<<initial_theta<<"\tX: "<<x<<"\tY: "<<y<<endl;
+                if (xiterator <= -3.0){
                     second = false;
+                    first = false;
                 } else {
+                    first = false;
+                    second = true;
+                }
+            } else if(second){
+                xi = xiterator;
+                yi = (3.0/sqrt(3.0))*xiterator - sqrt(3.0)/2.0;
+
+                x = xi*cos(initial_theta) - yi*sin(initial_theta);
+                y = xi*sin(initial_theta) + yi*cos(initial_theta);
+
+                xiterator = xiterator - spacing;
+                cout<<"AlgorithmAPath: "<<theta<<"\t2 inittheta: "<<initial_theta<<"\tX: "<<x<<"\tY: "<<y<<endl;
                     first = true;
                     second = false;
-                }
             } else if(third){
-                xi = 0.5 - xiterator;
-                yi = 6.0;
-    
+                xi = xiterator;
+                yi = (-9.0/sqrt(3.0)) - sqrt(3.0)/2.0;
+
                 x = xi*cos(initial_theta) - yi*sin(initial_theta);
                 y = xi*sin(initial_theta) + yi*cos(initial_theta);
-    
-                xiterator = xiterator + 0.5;
-                cout<<"AlgorithmBPath: "<<theta<<"\t3 inittheta: "<<initial_theta<<"\tX: "<<x<<"\tY: "<<y<<endl;
+
+                xiterator = xiterator - spacing;
+                cout<<"AlgorithmAPath: "<<theta<<"\t3 inittheta: "<<initial_theta<<"\tX: "<<x<<"\tY: "<<y<<endl;
+
                 third = false;
                 fourth = true;
             } else if(fourth){
-                xi = 0.5 - (9.0/sqrt(3.0));
-                yi = xiterator - yiterator;
-    
+                xi = xiterator;
+                yi = (9.0/sqrt(3.0)) + sqrt(3.0)/2.0;
+
                 x = xi*cos(initial_theta) - yi*sin(initial_theta);
                 y = xi*sin(initial_theta) + yi*cos(initial_theta);
+
+                cout<<"AlgorithmAPath: "<<theta<<"\t4 inittheta: "<<initial_theta<<"\tX: "<<x<<"\tY: "<<y<<endl;
                 
-                cout<<"AlgorithmBPath: "<<theta<<"\t4 inittheta: "<<initial_theta<<"\tX: "<<x<<"\tY: "<<y<<endl;
                 third = true;
                 fourth = false;
             }

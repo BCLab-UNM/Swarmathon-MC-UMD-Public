@@ -40,6 +40,7 @@ class SearchAlgorithmBehavior: public Behavior{
     float xiterator;
     float yiterator;
 
+    float spacing;
     long initTime;
 
     int msleep(unsigned long milisec)
@@ -61,6 +62,8 @@ class SearchAlgorithmBehavior: public Behavior{
         SearchAlgorithmBehavior() : Behavior(SEARCH_ALGORITHM_BEHAVIOR_TYPE){
             xiterator = 0.0;
             yiterator = 0.5;
+
+            spacing = 1.0;
         }
         bool tick();
         void determineRovers();
