@@ -50,7 +50,7 @@ void SearchAlgorithmBehavior::determineRovers(){
             initTime = millis();
         }
         else if (initialCheck){
-            if(millis() - initTime >= 10){
+            if(millis() - initTime >= 10000){
                 //msleep(2000); //this function is temprorary defined in searchalgorithm.h file. it makes it stop for 2 seconds
                 left = SonarHandler::instance()->getSonarLeft();
                 right = SonarHandler::instance()->getSonarRight();
