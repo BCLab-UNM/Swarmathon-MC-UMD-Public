@@ -21,6 +21,8 @@ void SearchAlgorithmBehavior::determineRovers(){
 
         if (initialDrive)
         {
+	    TargetHandler::instance()->setEnabled(false);
+            SonarHandler::instance()->setEnable(false);
             initial_theta = OdometryHandler::instance()->getTheta();
 
             /*if (theta < M_PI/4 && theta > -M_PI/4){
@@ -85,7 +87,7 @@ void SearchAlgorithmBehavior::determineRovers(){
                 y = xi*sin(initial_theta) + yi*cos(initial_theta);
 
                 cout<<"AlgorithmAPath: "<<theta<<"\t1 inittheta: "<<initial_theta<<"\tX: "<<x<<"\tY: "<<y<<endl;
-                if (xiterator <= -2.0){
+                if (xiterator <= -3.0){
                     second = false;
                     first = false;
                 } else {
@@ -102,13 +104,8 @@ void SearchAlgorithmBehavior::determineRovers(){
 
                 xiterator = xiterator - 0.5;
                 cout<<"AlgorithmAPath: "<<theta<<"\t2 inittheta: "<<initial_theta<<"\tX: "<<x<<"\tY: "<<y<<endl;
-                if (xiterator <= -2.0){
-                    first = false;
-                    second = false;
-                } else {
                     first = true;
                     second = false;
-                }
             } else if(third){
                 xi = xiterator;
                 yi = (-9.0/sqrt(3.0)) - sqrt(3.0)/2.0;
