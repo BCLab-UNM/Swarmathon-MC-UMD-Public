@@ -77,7 +77,7 @@ void SearchAlgorithmBehavior::determineRovers(){
             //run_algorithm=true;
         }
     }
-    else if(turnAround)
+/*    else if(turnAround)
     {
         if(DriveController::instance()->turnToTheta(theta)){
             turnAround = false;
@@ -85,7 +85,7 @@ void SearchAlgorithmBehavior::determineRovers(){
             SonarHandler::instance()->setEnable(true);
         }
     }
-
+*/
 // Now rover know what algorithm should be run, it starts running the algorithm
     else
     {
@@ -250,31 +250,54 @@ void SearchAlgorithmBehavior::determineRovers(){
         else { //default algorithm should be here, I chose AlgorithmB for now
 
             if(first){
-                xi = 0.5 - (3.0/sqrt(3.0))*yiterator;
-                yi = yiterator;
-
+                xi = 0.5;
+                yi = 2.0*yiterator;
+    
                 x = xi*cos(initial_theta) - yi*sin(initial_theta);
                 y = xi*sin(initial_theta) + yi*cos(initial_theta);
-
-                cout<<"AlgorithmDefaultPath: "<<theta<<"\t1 inittheta: "<<initial_theta<<"\tX: "<<x<<"\tY: "<<y<<endl;
-
-
+                
+                cout<<"AlgorithmCPath: "<<theta<<"\t1 inittheta: "<<initial_theta<<"\tX: "<<x<<"\tY: "<<y<<endl; 
                 first = false;
                 second = true;
             } else if(second){
                 TargetHandler::instance()->setEnabled(true);
-                xi = 0.5;
-                yi = -2.0*yiterator;
-
+                xi = (-3.0/sqrt(3.0))*yiterator + 0.5;
+                yi = -yiterator;
+    
                 x = xi*cos(initial_theta) - yi*sin(initial_theta);
                 y = xi*sin(initial_theta) + yi*cos(initial_theta);
-
+    
                 yiterator = yiterator + 0.5;
-                cout<<"AlgorithmBPath: "<<theta<<"\t2 inittheta: "<<initial_theta<<"\tX: "<<x<<"\tY: "<<y<<endl;
-                first = true;
-                second = false;
+                cout<<"AlgorithmCPath: "<<theta<<"\t2 inittheta: "<<initial_theta<<"\tX: "<<x<<"\tY: "<<y<<endl;
+                if (yiterator >= 3.0){
+                    first = false;
+                    second = false;
+                } else {
+                    first = true;
+                    second = false;
+                }
+            } else if(third){
+                xi = 0.5 - xiterator;
+                yi = 6.0;
+    
+                x = xi*cos(initial_theta) - yi*sin(initial_theta);
+                y = xi*sin(initial_theta) + yi*cos(initial_theta);
+    
+                xiterator = xiterator + 0.5;
+                cout<<"AlgorithmBPath: "<<theta<<"\t3 inittheta: "<<initial_theta<<"\tX: "<<x<<"\tY: "<<y<<endl;
+                third = false;
+                fourth = true;
+            } else if(fourth){
+                xi = 0.5 - (9.0/sqrt(3.0));
+                yi = xiterator - yiterator;
+    
+                x = xi*cos(initial_theta) - yi*sin(initial_theta);
+                y = xi*sin(initial_theta) + yi*cos(initial_theta);
+                
+                cout<<"AlgorithmBPath: "<<theta<<"\t4 inittheta: "<<initial_theta<<"\tX: "<<x<<"\tY: "<<y<<endl;
+                third = true;
+                fourth = false;
             }
-
         }
   }
 }
