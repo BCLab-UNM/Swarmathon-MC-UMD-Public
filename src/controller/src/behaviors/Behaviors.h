@@ -10,6 +10,9 @@
 #include "DriveBehavior.h"
 #include "SearchForDropBehavior.h"
 #include "DropBehavior.h"
+#include "SearchAlgorithm.h"
+#include "SearchAlgorithmRelative.h"
+#include "SearchAlgorithmSixRovers.h"
 
 #include "ros/ros.h"
 #include "../controllers/DriveController.h"

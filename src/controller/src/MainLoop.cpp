@@ -156,8 +156,11 @@ int main(int argc, char **argv) {
     OffsetController::instance()->registerPublishers(offsetPublish);
 
 
-    SMACS::instance()->robotName = publishedName;
-    //SMACS::instance()->push(new DropBehavior());
+    // Put the first behavior on stack
+
+    //SMACS::instance()->push(new SearchBehavior());              TESTING PURPOSES ONLY
+    SMACS::instance()->push(new SearchAlgorithmBehavior());
+    //SMACS::instance()->push(new SearchAlgorithmRelativeBehavior());
 
     // Disable the sonar because the robot is not doing anything yet
     SonarHandler::instance()-> setEnable(false);
