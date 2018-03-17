@@ -25,6 +25,7 @@ class PickUpBehavior : public Behavior{
         PICK_UP,
         RETRY,
         DONE,
+        TURN_TO_BASE,
         DROP
     };
     Stages currentStage;
@@ -61,6 +62,8 @@ class PickUpBehavior : public Behavior{
     bool waiting;
     time_t initTime;
     time_t currTime;
+
+    float baseTheta;
 
 
     public:
