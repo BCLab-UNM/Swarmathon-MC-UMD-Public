@@ -39,6 +39,8 @@ class SearchAlgorithmBehavior: public Behavior{
     float xiterator;
     float yiterator;
 
+    long initTime;
+
     int msleep(unsigned long milisec)
     { //Funvtion to stop the program for miliseconds
         struct timespec req={0};
