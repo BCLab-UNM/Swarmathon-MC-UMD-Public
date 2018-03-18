@@ -195,7 +195,7 @@ void tick(const ros::TimerEvent&) {
 
 
             // Put the first behavior on stack
-            SMACS::instance()->push(new SearchAlgorithmBehavior());
+            SMACS::instance()->push(new SearchBehavior());
 
             // Get round type
             bool roundType = HiveController::instance()->roundType();
