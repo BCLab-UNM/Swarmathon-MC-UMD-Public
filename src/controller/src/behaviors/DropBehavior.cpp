@@ -54,13 +54,15 @@ bool DropBehavior::tick(){
                 m.getRPY(roll, pitch, yaw);
 
                 OffsetController::instance()->centerTheta =yaw;
+
+                x=0;
+                y=0;
             } else {
                 //Record the center
                 OffsetController::instance()->centerX = x;
                 OffsetController::instance()->centerY = y;
                 OffsetController::instance()->centerTheta = OdometryHandler::instance()->getTheta();
             }
-
 
             break;
         }
