@@ -195,7 +195,8 @@ void tick(const ros::TimerEvent&) {
 
 
             // Put the first behavior on stack
-            SMACS::instance()->push(new SearchBehavior());
+            TargetHandler::instance()->setHasCube(true);
+            SMACS::instance()->push(new SearchForDropBehavior());
             SonarHandler::instance()->setEnable(true);
 
 

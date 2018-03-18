@@ -57,8 +57,7 @@ bool SearchForDropBehavior::tick(){
 
                 } else if(searchTry > 1){
                     if(DriveController::instance()->goToDistance(distance, theta)){
-                        if(searchTry % 2 == 0)
-                            distance+=0.5;
+                        distance+=0.25;
 
                         theta = OdometryHandler::instance()->getTheta() + M_PI_4;
                         x = OdometryHandler::instance()->getX() + ((distance) * cos(theta));
