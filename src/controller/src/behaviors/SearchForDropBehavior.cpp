@@ -42,14 +42,14 @@ bool SearchForDropBehavior::tick(){
                     if(DriveController::instance()->goToDistance(distance, theta)){
                         searchTry++;
                         distance = 1;
-                        theta = OdometryHandler::instance()->getTheta() + M_PI_2;
+                        theta = OdometryHandler::instance()->getTheta() + M_PI_4;
                         x = OdometryHandler::instance()->getX() + ((distance) * cos(theta));
                         y = OdometryHandler::instance()->getY() + ((distance) * sin(theta));
                     }
                 } else if(searchTry == 1){
                     if(DriveController::instance()->goToDistance(distance, theta)){
-                        distance = 2;
-                        theta = OdometryHandler::instance()->getTheta() + M_PI_2;
+                        distance = 1;
+                        theta = OdometryHandler::instance()->getTheta() + M_PI_4;
                         x = OdometryHandler::instance()->getX() + ((distance) * cos(theta));
                         y = OdometryHandler::instance()->getY() + ((distance) * sin(theta));
                         searchTry++;
@@ -60,7 +60,7 @@ bool SearchForDropBehavior::tick(){
                         if(searchTry % 2 == 0)
                             distance+=0.5;
 
-                        theta = OdometryHandler::instance()->getTheta() + M_PI_2;
+                        theta = OdometryHandler::instance()->getTheta() + M_PI_4;
                         x = OdometryHandler::instance()->getX() + ((distance) * cos(theta));
                         y = OdometryHandler::instance()->getY() + ((distance) * sin(theta));
                         searchTry++;
