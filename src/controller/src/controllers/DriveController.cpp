@@ -134,7 +134,7 @@ bool DriveController::goToLocation(float x, float y){
                 if(fabs(errorYaw) < rotateOnlyAngleTolerance){
                     // goal not yet reached drive while maintaining proper heading.
                     if (distance > waypointTolerance){
-                        slowPID((searchVelocity-linear) ,0, searchVelocity, 0);
+                        slowPID((searchVelocity-linear) ,errorYaw, searchVelocity, currentDrive.theta);
                     } else {
                         stop();
                         stateMachineState = STATE_MACHINE_ROTATE;

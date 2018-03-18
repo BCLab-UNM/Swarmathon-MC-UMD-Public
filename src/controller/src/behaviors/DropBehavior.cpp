@@ -41,16 +41,25 @@ bool DropBehavior::tick(){
             y = OdometryHandler::instance()->getY();
 
             //if the offset is greater than 2.5 meter
-            if(fabs(hypot(x - OffsetController::instance()->centerX, y - OffsetController::instance()->centerY)) > 1){
+            if(fabs(hypot(x - OffsetController::instance()->centerX, y - OffsetController::instance()->centerY)) > 0.7){
                 //reset odom
-                OffsetController::instance()->sendOffsets(0, 0, OdometryHandler::instance()->w, OdometryHandler::instance()->z);
+                OffsetController::instance()->sendOffsets(0, 0, IMUHandler::instance()->w, IMUHandler::instance()->z);
+                OffsetController::instance()->centerX = 0;
+                OffsetController::instance()->centerY = 0;
+
+                //Get theta rotation by converting quaternion orientation to pitch/roll/yaw
+                tf::Quaternion q(IMUHandler::instance()->x, IMUHandler::instance()->y, IMUHandler::instance()->z, IMUHandler::instance()->w);
+                tf::Matrix3x3 m(q);
+                double roll, pitch, yaw;
+                m.getRPY(roll, pitch, yaw);
+
+                OffsetController::instance()->centerTheta =yaw;
+            } else {
+                //Record the center
+                OffsetController::instance()->centerX = x;
+                OffsetController::instance()->centerY = y;
+                OffsetController::instance()->centerTheta = OdometryHandler::instance()->getTheta();
             }
-
-            //Record the center
-            OffsetController::instance()->centerX = x;
-            OffsetController::instance()->centerY = y;
-            OffsetController::instance()->centerTheta = OdometryHandler::instance()->getTheta();
-
 
 
             break;
