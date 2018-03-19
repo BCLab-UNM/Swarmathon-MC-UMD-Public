@@ -141,6 +141,9 @@ class DriveController{
         // send drive command to the publisher
         void sendDriveCommand(double left, double right);
 
+        void sendDriveCommandNoFix(double left, double right);
+
+
         // Turn right with speed
         void turnRight(double speed){sendDriveCommand(speed, -speed);}
 

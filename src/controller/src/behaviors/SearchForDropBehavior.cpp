@@ -45,8 +45,8 @@ bool SearchForDropBehavior::tick(){
                     searchTry++;
 
                     if(searchTry > 0){
-                        left = 30;
-                        right = 20;
+                        left = 1;
+                        right = 10;
                         initTime = millis();
                         stage = GPS_TARGET;
                         searchTry = 0;
@@ -58,7 +58,7 @@ bool SearchForDropBehavior::tick(){
             }
             case GPS_TARGET:
             {
-                DriveController::instance()->sendDriveCommand(left, right);
+                DriveController::instance()->sendDriveCommandNoFix(left, right);
                 if((millis() - initTime) == 5000){
                     initTime = millis();
                     left += 5;

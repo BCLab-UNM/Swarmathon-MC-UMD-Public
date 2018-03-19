@@ -389,6 +389,13 @@ void DriveController::sendDriveCommand(double left, double right){
 }
 
 
+void DriveController::sendDriveCommandNoFix(double left, double right){
+    velocity.linear.x = left;
+    velocity.angular.z = right;
+
+    drivePublisher.publish(velocity);
+}
+
 
 
 
