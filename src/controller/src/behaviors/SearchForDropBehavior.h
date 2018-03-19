@@ -14,9 +14,10 @@ class SearchForDropBehavior : public Behavior{
         ODOM_TARGET = 0,
         TURN_TO_THETA,
         SEARCH_FOR_CENTER,
+        SEARCH_CIRCLE,
         GPS_TARGET,
         SEARCH,
-        ASK,
+        CHECK_FOR_CUBE,
         DRIVE,
         DROP
     };
@@ -31,6 +32,12 @@ class SearchForDropBehavior : public Behavior{
    int right = 5;
 
    long initTime;
+
+   bool starSearch = true;
+   bool circleSearch = true;
+   bool gpsSearch = true;
+
+   bool cubeChecked = false;
 
     public:
         SearchForDropBehavior() : Behavior(SEARCH_FOR_DROP_BEHAVIOR_TYPE){

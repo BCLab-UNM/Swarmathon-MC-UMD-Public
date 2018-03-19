@@ -2,13 +2,12 @@
 
 bool SearchForDropBehavior::tick(){
     if(TargetHandler::instance()->getHasCube()){
-        //turn on sonars for avoid
-        SonarHandler::instance()->setEnable(false);
         //turn off camera for center avoid and cube pick up
         TargetHandler::instance()->setEnabled(false);
         switch(stage){       
             case ODOM_TARGET:
             {
+                SonarHandler::instance()->setEnable(true);
                 TargetHandler::instance()->setEnabled(false);
                 float centerX = OffsetController::instance()->centerX;
                 float centerY = OffsetController::instance()->centerY;
@@ -44,46 +43,92 @@ bool SearchForDropBehavior::tick(){
                     y = OdometryHandler::instance()->getY() + ((distance) * sin(theta));
                     searchTry++;
 
-                    if(searchTry > 0){
-                        left = 10;
-                        right = 40;
-                        initTime = millis();
-                        stage = GPS_TARGET;
-                        searchTry = 0;
+                    if(searchTry > 20){
+                        if(DriveController::instance()->goToLocation(0, 0)){
+                            left = 88;
+                            right = 1;
+                            initTime = millis();
+                            SonarHandler::instance()->setEnable(false);
+                            stage = CHECK_FOR_CUBE;
+                            searchTry = 0;
+                        }
                     }
                 }
 
 
+                break;
+            }
+            case SEARCH_CIRCLE:
+            {
+                DriveController::instance()->sendDriveCommandNoFix(left, right);
+                if((millis() - initTime) >= 20000){
+                    initTime = millis();
+                    left += 10;
+                    right += 15;
+                    searchTry++;
+                    if(searchTry >= 5){
+                        if(DriveController::instance()->goToLocation(0, 0)){
+                            searchTry = 0;
+                            SonarHandler::instance()->setEnable(false);
+                            initTime = millis();
+                            stage = CHECK_FOR_CUBE;
+                        }
+                    }
+                }
                 break;
             }
             case GPS_TARGET:
             {
-                DriveController::instance()->sendDriveCommandNoFix(left, right);
-                if((millis() - initTime) >= 5000){
-                    initTime = millis();
-                    left += 5;
-                    right += 5;
-                    searchTry++;
-                    if(searchTry >= 5){
-                        searchTry = 0;
-                        stage = SEARCH_FOR_CENTER;
-                    }
-                }
+
                 break;
             }
+
             case SEARCH:
             {
                 searchTry = 0;
                 if(DriveController::instance()->goToLocation(0, 0)){
                     stage = SEARCH_FOR_CENTER;
                 }
-                stage = ASK;
+
                 break;
             }
-            case ASK:
+            case CHECK_FOR_CUBE:
             {
-                SonarHandler::instance()->setEnable(false);
-                stage = DROP;
+                DriveController::instance()->stop();
+
+                ClawController::instance()->wristUp();
+
+                if(millis() - initTime > 3000){
+                    if(cubeChecked){
+                        ClawController::instance()->wristDownWithCube();
+
+                        if(starSearch){
+                            stage = SEARCH_CIRCLE;
+                            starSearch = false;
+                        } else if (circleSearch){
+                            stage = GPS_TARGET;
+                            circleSearch = false;
+                        } else if (gpsSearch){
+                            stage = SEARCH;
+                            gpsSearch = false;
+                        } else {
+                            stage = SEARCH;
+                        }
+                    } else {
+                        ClawController::instance()->fingerOpen();
+                        TargetHandler::instance()->setHasCube(false);
+                    }
+
+                    initTime = millis();
+                    cubeChecked = false;
+                    SonarHandler::instance()->setEnable(true);
+                } else {
+                    float center = SonarHandler::instance()->getSonarCenter();
+                    if(center < 0.14){
+                        cubeChecked = true;
+                    }
+                }
+
                 break;
             }
         }
