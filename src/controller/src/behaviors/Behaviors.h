@@ -24,7 +24,7 @@ class TestTurn : public Behavior{
 
 public:
 
-    TestTurn():Behavior(SEARCH_BEHAVIOR_TYPE){}
+    TestTurn():Behavior(SEARCH_BEHAVIOR_TYPE){theta = OdometryHandler::instance()->getTheta();}
     bool tick();
 };
 
