@@ -185,8 +185,8 @@ void tick(const ros::TimerEvent&) {
         if(!init){
             // Set heading and offset the position
             float theta = IMUHandler::instance()->theta;
-            float x = 0 + (0.5 * cos(theta));
-            float y = 0 + (0.5 * sin(theta));
+            float x = 0 + (1 * cos(theta));
+            float y = 0 + (1 * sin(theta));
 
             OffsetController::instance()->sendOffsets(-x, -y, IMUHandler::instance()->w, IMUHandler::instance()->z);
             OffsetController::instance()->centerX = 0;
