@@ -35,7 +35,7 @@ class AvoidCenterBehavior : public Behavior{
 
     public:
         AvoidCenterBehavior() : Behavior(AVOID_CENTER_BEHAVIOR_TYPE){
-            stage = WAIT;
+            stage = RESET;
         }
         bool tick();
         void setTagData(vector<Tag> tags);
