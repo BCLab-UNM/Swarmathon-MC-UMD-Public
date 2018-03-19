@@ -25,7 +25,10 @@ bool SearchForDropBehavior::tick(){
             case TURN_TO_THETA:
             {
                 if(DriveController::instance()->turnToTheta(OffsetController::instance()->centerTheta)){
-                    stage = SEARCH_FOR_CENTER;
+                    stage = CHECK_FOR_CUBE;
+                    initTime = millis();
+                    SonarHandler::instance()->setEnable(false);
+
                     distance = 0.25;
                     theta = OdometryHandler::instance()->getTheta();
                     x = OdometryHandler::instance()->getX() + ((distance) * cos(theta));
@@ -45,7 +48,7 @@ bool SearchForDropBehavior::tick(){
                     y = OdometryHandler::instance()->getY() + ((distance) * sin(theta));
                     searchTry++;
 
-                    if(searchTry > 20){
+                    if(searchTry > 15){
                         if(DriveController::instance()->goToLocation(0, 0)){
                             left = 88;
                             right = 1;
@@ -108,8 +111,10 @@ bool SearchForDropBehavior::tick(){
                 if(millis() - initTime > 3000){
                     if(cubeChecked){
                         ClawController::instance()->wristDownWithCube();
-
-                        if(starSearch){
+                        if(checkCube){
+                            stage = SEARCH_FOR_CENTER;
+                            checkCube = false;
+                        } else if(starSearch){
                             stage = SEARCH_CIRCLE;
                             starSearch = false;
                         } else if (gpsSearch){

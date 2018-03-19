@@ -2,29 +2,52 @@
 
 bool AvoidCenterBehavior::tick(){
     switch(stage){
+
+        case RESET:
+        {
+            // Set heading and offset the position
+            float theta = IMUHandler::instance()->theta;
+            float nx = 0 + (0.2 * cos(theta));
+            float ny = 0 + (0.2 * sin(theta));
+
+            OffsetController::instance()->sendOffsets(-nx, -ny, IMUHandler::instance()->w, IMUHandler::instance()->z);
+
+            OffsetController::instance()->centerX = 0;
+            OffsetController::instance()->centerY = 0;
+            OffsetController::instance()->centerTheta = IMUHandler::instance()->theta;
+
+            x = nx;
+            y = ny;
+
+            initTime = millis();
+
+            break;
+        }
         case WAIT:
         {
-            //disable sonar for the drive back to safe distance
-            // stop rover
-            DriveController::instance()->sendDriveCommand(0, 0);
-            // check if we see center tags
-            if(TargetHandler::instance()->getNumberOfCenterTagsSeen() > 0){
-                cout << "AVOIDCENTER: " << "See center"<<endl;
-                SonarHandler::instance()->setEnable(false);
-                TargetHandler::instance()->setEnabled(false);
-//                vector <Tag> tags = TargetHandler::instance()->getCenterTags();
-//                for ( auto & tag : tags ) {
-//                    cout << "AVOIDCENTER: yaw: "<< tag.calcYaw() << " pitch: "<<tag.calcPitch() << " roll : " << tag.calcRoll() << endl;
-//                }
-                //save tags for later use
-                centerTags = TargetHandler::instance()->getCenterTags();
-                stage = DRIVEBACK;
-                x = OdometryHandler::instance()->getX();
-                y = OdometryHandler::instance()->getY();
-                theta = OdometryHandler::instance()->getTheta();
-            } else {
-                // If we do not see center tags - exit
-                return true;
+            if(millis() - initTime > 1000){
+                //disable sonar for the drive back to safe distance
+                // stop rover
+                DriveController::instance()->sendDriveCommand(0, 0);
+                // check if we see center tags
+                if(TargetHandler::instance()->getNumberOfCenterTagsSeen() > 0){
+                    cout << "AVOIDCENTER: " << "See center"<<endl;
+                    SonarHandler::instance()->setEnable(false);
+                    TargetHandler::instance()->setEnabled(false);
+    //                vector <Tag> tags = TargetHandler::instance()->getCenterTags();
+    //                for ( auto & tag : tags ) {
+    //                    cout << "AVOIDCENTER: yaw: "<< tag.calcYaw() << " pitch: "<<tag.calcPitch() << " roll : " << tag.calcRoll() << endl;
+    //                }
+                    //save tags for later use
+                    centerTags = TargetHandler::instance()->getCenterTags();
+                    stage = DRIVEBACK;
+                    x = OdometryHandler::instance()->getX();
+                    y = OdometryHandler::instance()->getY();
+                    theta = OdometryHandler::instance()->getTheta();
+                } else {
+                    // If we do not see center tags - exit
+                    return true;
+                }
             }
             break;
         }
@@ -79,7 +102,7 @@ bool AvoidCenterBehavior::tick(){
         case DRIVE:
         {
             if(TargetHandler::instance()->getNumberOfCenterTagsSeen() > 0){
-                stage = WAIT;
+                stage = RESET;
             } else {
 
                 float currX = OdometryHandler::instance()->getX();

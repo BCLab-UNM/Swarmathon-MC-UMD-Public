@@ -36,6 +36,7 @@ class SearchForDropBehavior : public Behavior{
 
    long initTime;
 
+   bool checkCube = true;
    bool starSearch = true;
    bool circleSearch = true;
    bool gpsSearch = true;
