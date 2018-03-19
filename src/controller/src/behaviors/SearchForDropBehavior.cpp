@@ -36,39 +36,19 @@ bool SearchForDropBehavior::tick(){
             {
                 cout<<"SEARCHCENTER: "<<x << " "<<y<<endl;
                 //If we do not see any tags yet. Try to drive around
-                //If this is our first search try
-                if(searchTry == 0){
-                    // Drive one meter forward
-                    if(DriveController::instance()->goToDistance(distance, theta)){
-                        searchTry++;
-                        distance = 1;
-                        theta = OdometryHandler::instance()->getTheta() + M_PI_4;
-                        x = OdometryHandler::instance()->getX() + ((distance) * cos(theta));
-                        y = OdometryHandler::instance()->getY() + ((distance) * sin(theta));
-                    }
-                } else if(searchTry == 1){
-                    if(DriveController::instance()->goToDistance(distance, theta)){
-                        distance = 1;
-                        theta = OdometryHandler::instance()->getTheta() + M_PI_4;
-                        x = OdometryHandler::instance()->getX() + ((distance) * cos(theta));
-                        y = OdometryHandler::instance()->getY() + ((distance) * sin(theta));
-                        searchTry++;
-                    }
+                if(DriveController::instance()->goToDistance(distance, theta)){
+                    distance+=0.25;
 
-                } else if(searchTry > 1){
-                    if(DriveController::instance()->goToDistance(distance, theta)){
-                        distance+=0.25;
+                    theta = OdometryHandler::instance()->getTheta() + 3*M_PI/4;
+                    x = OdometryHandler::instance()->getX() + ((distance) * cos(theta));
+                    y = OdometryHandler::instance()->getY() + ((distance) * sin(theta));
+                    searchTry++;
 
-                        theta = OdometryHandler::instance()->getTheta() + M_PI_4;
-                        x = OdometryHandler::instance()->getX() + ((distance) * cos(theta));
-                        y = OdometryHandler::instance()->getY() + ((distance) * sin(theta));
-                        searchTry++;
-
-                        if(searchTry > 15){
-                            stage = GPS_TARGET;
-                        }
+                    if(searchTry > 20){
+                        stage = GPS_TARGET;
                     }
                 }
+
 
                 break;
             }

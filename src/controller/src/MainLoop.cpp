@@ -197,7 +197,7 @@ void tick(const ros::TimerEvent&) {
             // Put the first behavior on stack
             TargetHandler::instance()->setHasCube(true);
             SMACS::instance()->push(new SearchForDropBehavior());
-            SonarHandler::instance()->setEnable(true);
+            SonarHandler::instance()->setEnable(false);
 
 
             // Get round type

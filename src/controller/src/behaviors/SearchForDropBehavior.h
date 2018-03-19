@@ -23,7 +23,7 @@ class SearchForDropBehavior : public Behavior{
 
    Stages stage = ODOM_TARGET;
    int searchTry = 0;
-   int distance = 1.5;
+   float distance = 0.25;
    float theta;
    float x, y;
 
