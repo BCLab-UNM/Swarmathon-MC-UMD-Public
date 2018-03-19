@@ -1,5 +1,6 @@
 #include "SearchForDropBehavior.h"
 
+
 bool SearchForDropBehavior::tick(){
     if(TargetHandler::instance()->getHasCube()){
         //turn off camera for center avoid and cube pick up
@@ -25,6 +26,7 @@ bool SearchForDropBehavior::tick(){
             {
                 if(DriveController::instance()->turnToTheta(OffsetController::instance()->centerTheta)){
                     stage = SEARCH_FOR_CENTER;
+                    distance = 0.25;
                     theta = OdometryHandler::instance()->getTheta();
                     x = OdometryHandler::instance()->getX() + ((distance) * cos(theta));
                     y = OdometryHandler::instance()->getY() + ((distance) * sin(theta));
@@ -77,17 +79,22 @@ bool SearchForDropBehavior::tick(){
                 }
                 break;
             }
-            case GPS_TARGET:
-            {
-
-                break;
-            }
-
             case SEARCH:
             {
-                searchTry = 0;
-                if(DriveController::instance()->goToLocation(0, 0)){
-                    stage = SEARCH_FOR_CENTER;
+                if(DriveController::instance()->goToDistance(distance, theta)){
+                    if(searchTry >= 10){
+                        searchTry = 0;
+                        stage = CHECK_FOR_CUBE;
+                        initTime = millis();
+                        SonarHandler::instance()->setEnable(false);
+                    }
+
+                    //get random angle (up to ~60 deg)
+                    theta = rng->gaussian(OdometryHandler::instance()->getTheta(), 1);
+
+                    //get rand dist
+                    distance =  ((rand() %10) + 1) / 10;
+
                 }
 
                 break;
@@ -105,18 +112,26 @@ bool SearchForDropBehavior::tick(){
                         if(starSearch){
                             stage = SEARCH_CIRCLE;
                             starSearch = false;
-                        } else if (circleSearch){
-                            stage = GPS_TARGET;
-                            circleSearch = false;
                         } else if (gpsSearch){
+                            theta = OdometryHandler::instance()->getTheta();
+                            distance = 0.5;
                             stage = SEARCH;
                             gpsSearch = false;
                         } else {
+                            theta = OdometryHandler::instance()->getTheta();
+                            distance = 0.5;
                             stage = SEARCH;
                         }
                     } else {
-                        ClawController::instance()->fingerOpen();
-                        TargetHandler::instance()->setHasCube(false);
+                        float center = SonarHandler::instance()->getSonarCenter();
+                        if(center < 0.15){
+                            cubeChecked = true;
+                            break;
+                        } else {
+                            ClawController::instance()->fingerOpen();
+                            TargetHandler::instance()->setHasCube(false);
+                            return true;
+                        }
                     }
 
                     initTime = millis();
@@ -124,7 +139,7 @@ bool SearchForDropBehavior::tick(){
                     SonarHandler::instance()->setEnable(true);
                 } else {
                     float center = SonarHandler::instance()->getSonarCenter();
-                    if(center < 0.14){
+                    if(center < 0.15){
                         cubeChecked = true;
                     }
                 }

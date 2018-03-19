@@ -8,6 +8,9 @@
 #include "../handlers/Handlers.h"
 #include "DriveBehavior.h"
 #include "../SMACS.h"
+#include <cstdlib>
+#include <ctime>
+#include <random_numbers/random_numbers.h>
 
 class SearchForDropBehavior : public Behavior{
     enum Stages{
@@ -39,9 +42,11 @@ class SearchForDropBehavior : public Behavior{
 
    bool cubeChecked = false;
 
+   random_numbers::RandomNumberGenerator* rng;
+
     public:
         SearchForDropBehavior() : Behavior(SEARCH_FOR_DROP_BEHAVIOR_TYPE){
-
+            srand(time(NULL));
         }
 
         bool tick();
