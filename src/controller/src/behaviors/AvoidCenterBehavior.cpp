@@ -7,10 +7,11 @@ bool AvoidCenterBehavior::tick(){
         {
             // Set heading and offset the position
             float theta = IMUHandler::instance()->theta;
-            float nx = 0 + (0.2 * cos(theta));
-            float ny = 0 + (0.2 * sin(theta));
+            float nx = 0 + (0.3 * cos(theta));
+            float ny = 0 + (0.3 * sin(theta));
 
-            OffsetController::instance()->sendOffsets(-nx, -ny, IMUHandler::instance()->w, IMUHandler::instance()->z);
+
+            OffsetController::instance()->sendOffsets(-nx, -ny, OdometryHandler::instance()->w, OdometryHandler::instance()->z);
 
             OffsetController::instance()->centerX = 0;
             OffsetController::instance()->centerY = 0;
@@ -20,6 +21,7 @@ bool AvoidCenterBehavior::tick(){
             y = ny;
 
             initTime = millis();
+            stage = WAIT;
 
             break;
         }
