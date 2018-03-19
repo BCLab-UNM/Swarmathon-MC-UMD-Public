@@ -27,6 +27,11 @@ class SearchForDropBehavior : public Behavior{
    float theta;
    float x, y;
 
+   int left = 10;
+   int right = 5;
+
+   long initTime;
+
     public:
         SearchForDropBehavior() : Behavior(SEARCH_FOR_DROP_BEHAVIOR_TYPE){
 

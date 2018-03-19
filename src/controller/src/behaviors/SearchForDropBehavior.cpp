@@ -44,8 +44,12 @@ bool SearchForDropBehavior::tick(){
                     y = OdometryHandler::instance()->getY() + ((distance) * sin(theta));
                     searchTry++;
 
-                    if(searchTry > 20){
+                    if(searchTry > 0){
+                        left = 30;
+                        right = 20;
+                        initTime = millis();
                         stage = GPS_TARGET;
+                        searchTry = 0;
                     }
                 }
 
@@ -54,14 +58,25 @@ bool SearchForDropBehavior::tick(){
             }
             case GPS_TARGET:
             {
-                searchTry = 0;
-                if(DriveController::instance()->goToLocation(0, 0)){
-                    stage = SEARCH_FOR_CENTER;
+                DriveController::instance()->sendDriveCommand(left, right);
+                if((millis() - initTime) == 5000){
+                    initTime = millis();
+                    left += 5;
+                    right += 5;
+                    searchTry++;
+                    if(searchTry >= 5){
+                        searchTry = 0;
+                        stage = SEARCH_FOR_CENTER;
+                    }
                 }
                 break;
             }
             case SEARCH:
             {
+                searchTry = 0;
+                if(DriveController::instance()->goToLocation(0, 0)){
+                    stage = SEARCH_FOR_CENTER;
+                }
                 stage = ASK;
                 break;
             }
