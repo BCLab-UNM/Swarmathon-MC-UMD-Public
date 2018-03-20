@@ -134,7 +134,9 @@ bool SearchForDropBehavior::tick(){
                             break;
                         } else {
                             ClawController::instance()->fingerOpen();
+                            SonarHandler::instance()->setEnable(true);
                             TargetHandler::instance()->setHasCube(false);
+                            TargetHandler::instance()->setEnabled(true);
                             return true;
                         }
                     }
