@@ -156,8 +156,11 @@ int main(int argc, char **argv) {
     OffsetController::instance()->registerPublishers(offsetPublish);
 
 
-    SMACS::instance()->robotName = publishedName;
-    //SMACS::instance()->push(new DropBehavior());
+    // Put the first behavior on stack
+
+    //SMACS::instance()->push(new SearchBehavior());              TESTING PURPOSES ONLY
+    //SMACS::instance()->push(new SearchAlgorithmBehavior());
+    //SMACS::instance()->push(new SearchAlgorithmRelativeBehavior());
 
     // Disable the sonar because the robot is not doing anything yet
     SonarHandler::instance()-> setEnable(false);
@@ -182,8 +185,8 @@ void tick(const ros::TimerEvent&) {
         if(!init){
             // Set heading and offset the position
             float theta = IMUHandler::instance()->theta;
-            float x = 0 + (0.5 * cos(theta));
-            float y = 0 + (0.5 * sin(theta));
+            float x = 0 + (1 * cos(theta));
+            float y = 0 + (1 * sin(theta));
 
             OffsetController::instance()->sendOffsets(-x, -y, IMUHandler::instance()->w, IMUHandler::instance()->z);
             OffsetController::instance()->centerX = 0;
@@ -193,6 +196,8 @@ void tick(const ros::TimerEvent&) {
 
             // Put the first behavior on stack
             SMACS::instance()->push(new SearchBehavior());
+            SonarHandler::instance()->setEnable(true);
+
 
             // Get round type
             bool roundType = HiveController::instance()->roundType();

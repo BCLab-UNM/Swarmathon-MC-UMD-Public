@@ -15,7 +15,8 @@ class AvoidCenterBehavior : public Behavior{
         WAIT = 0,
         DRIVEBACK,
         TURN,
-        DRIVE
+        DRIVE,
+        RESET
     };
     Stage stage;
 
@@ -29,11 +30,12 @@ class AvoidCenterBehavior : public Behavior{
     float driveSpeed = 70;
 
     vector<Tag> centerTags;
+    long initTime;
 
 
     public:
         AvoidCenterBehavior() : Behavior(AVOID_CENTER_BEHAVIOR_TYPE){
-            stage = WAIT;
+            stage = RESET;
         }
         bool tick();
         void setTagData(vector<Tag> tags);

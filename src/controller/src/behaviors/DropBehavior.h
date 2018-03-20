@@ -11,7 +11,8 @@ class DropBehavior : public Behavior{
         INIT = 0,
         DRIVE_TO_CENTER,
         DROP_CUBE,
-        DRIVE_BACK
+        DRIVE_BACK,
+        TURN
     };
 
     Stages stage;
@@ -19,6 +20,8 @@ class DropBehavior : public Behavior{
     //The initial x and y from whch we drive
     double x = 0;
     double y = 0;
+    float theta;
+    long initTime;
 
     int slowDrive = 60;
 
