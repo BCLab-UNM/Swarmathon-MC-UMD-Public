@@ -21,6 +21,7 @@ class DropBehavior : public Behavior{
     double x = 0;
     double y = 0;
     float theta;
+    long initTime;
 
     int slowDrive = 60;
 

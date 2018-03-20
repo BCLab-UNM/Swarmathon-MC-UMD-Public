@@ -6,7 +6,7 @@ bool SearchBehavior::tick(){
     if(first){
         nextPoint();
     } else {
-        if(DriveController::instance()->goToLocation(x, y)){
+        if(DriveController::instance()->goToDistance(distance, theta)){
             cout<<"SEARCH: NEW Point"<<endl;
             nextPoint();
         }

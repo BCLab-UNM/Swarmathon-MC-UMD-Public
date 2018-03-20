@@ -225,7 +225,7 @@ bool PickUpBehavior::tick(){
             float distance = hypot(initX - currX, initY - currY);
             cout << "PICKUP: distance left " << (blockDistance - distance) << " Curr dist: "<<distance<< endl;
 
-            if(blockDistance - distance <= 0.10){
+            if(blockDistance - distance <= 0.13){
                 currentStage = PICK_UP;
 
                 DriveController::instance()->stop();

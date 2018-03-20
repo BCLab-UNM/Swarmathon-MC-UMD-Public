@@ -30,8 +30,8 @@ class DriveController{
     const float waypointTolerance = 0.15; //15 cm tolerance.
 
     float scaler = 0.5;
-    float searchVelocity = 0.50; // meters/second  //0.65 MAX value
-    float yawVelocity = 0.40;
+    float searchVelocity = 0.30; // meters/second  //0.65 MAX value
+    float yawVelocity = 0.30;
 
     // The initial left min and right min values for the robot
     // Used when the robot never ran the calibration
@@ -140,6 +140,9 @@ class DriveController{
 
         // send drive command to the publisher
         void sendDriveCommand(double left, double right);
+
+        void sendDriveCommandNoFix(double left, double right);
+
 
         // Turn right with speed
         void turnRight(double speed){sendDriveCommand(speed, -speed);}

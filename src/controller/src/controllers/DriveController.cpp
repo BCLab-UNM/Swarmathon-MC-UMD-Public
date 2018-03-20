@@ -134,7 +134,7 @@ bool DriveController::goToLocation(float x, float y){
                 if(fabs(errorYaw) < rotateOnlyAngleTolerance){
                     // goal not yet reached drive while maintaining proper heading.
                     if (distance > waypointTolerance){
-                        slowPID((searchVelocity-linear) ,errorYaw, searchVelocity, currentDrive.theta);
+                        slowPID((searchVelocity-linear) ,0, searchVelocity, 0);
                     } else {
                         stop();
                         stateMachineState = STATE_MACHINE_ROTATE;
@@ -179,30 +179,55 @@ bool DriveController::goToDistance(float distance, float direction){
         switch(stateMachineState){
             case STATE_MACHINE_ROTATE:
             {
-
-                // Calculate angle between currentLocation.theta and waypoints.front().theta
+                // Calculate angle between currentLocation.theta and theta we desire
                 // Rotate left or right depending on sign of angle
                 // Stay in this state until angle is minimized
-                //currentDrive.theta = atan2(currentDrive.y - currentLocation.y, currentDrive.x - currentLocation.x);
 
-                // Calculate the diffrence between current and desired heading in radians.
+                // Calculate the theta from our position to the desired position
+                // Where we should face to drive to where we want
+                currentDrive.theta = direction;
+
+                // Calculate the difference between current and desired heading in radians.
                 float errorYaw = angles::shortest_angular_distance(currentLocation.theta, currentDrive.theta);
 
-                cout << "DRIVE: Rotating, Error:  "<< errorYaw << endl;
+                // Check if prev error was initialized
+                // This is used because the PID with cause the robot to "Dance" left and right
+                // So we save the previous angle to make sure that it is increasing and not decreasing
+                if(!isDistanceTurnedInit){
+                    //init prev error
+                    isDistanceTurnedInit = true;
+                    initDirection = currentLocation.theta;
+                    prevDistanceTurned = fabs(angles::shortest_angular_distance(currentLocation.theta, initDirection));
+                }
 
-                //Calculate absolute value of angle
-                float abs_error = fabs(angles::shortest_angular_distance(currentLocation.theta, currentDrive.theta));
+                // Calculate the current distance we turned. It should increase
+                float currDistanceTurned = fabs(angles::shortest_angular_distance(currentLocation.theta, initDirection));
 
-                // If angle > rotateOnlyAngleTolerance radians rotate but dont drive forward.
-                if (abs_error > rotateOnlyAngleTolerance){
-                    fastPID(0.0, errorYaw, 0.0, currentDrive.theta);
-                    break;
-
-                } else {
+                // If previous distance turned is greater than the current distance turned means we are dancing
+                // Also check if the dance is big enough to activate our failsafe. Meaning if the error between
+                // angles is more than certain amount of degrees then activate the failsafe
+                if((prevDistanceTurned > currDistanceTurned) && (prevDistanceTurned - currDistanceTurned) > 0.0349){
+                    cout << "DRIVE:Going into final rotate because PID is crap! Curr d: "<<currDistanceTurned<<" prev_d: "<< prevDistanceTurned<<endl;
                     stop();
-                    //move to differential drive step
-                    stateMachineState = STATE_MACHINE_SKID_STEER;
-                    //fall through on purpose.
+                    //move to final rotate step where robots rotate as slow as possible to minimize the angle
+                    stateMachineState = FINAL_ROTATE;
+                    isDistanceTurnedInit = false;
+                } else {
+                    cout << "DRIVE: Using PID to turn! Curr d:"<< currDistanceTurned <<" prev d: "<<prevDistanceTurned <<endl;
+                    prevDistanceTurned = currDistanceTurned;
+                    //Calculate absolute value of angle
+                    float abs_error = fabs(angles::shortest_angular_distance(currentLocation.theta, currentDrive.theta));
+
+                    // If angle > rotateOnlyAngleTolerance radians rotate but don't drive forward.
+                    if (abs_error > rotateOnlyAngleTolerance){
+                        slowPID(0.0, errorYaw, 0.0, currentDrive.theta);
+                        break;
+                    } else {
+                        stop();
+                        //move to final rotate step where robots rotate as slow as possible to minimize the angle
+                        stateMachineState = FINAL_ROTATE;
+                        //fall through on purpose.
+                    }
                 }
             }
             case FINAL_ROTATE:
@@ -210,55 +235,64 @@ bool DriveController::goToDistance(float distance, float direction){
                 // Calculate angle between currentLocation.theta and waypoints.front().theta
                 // Rotate left or right depending on sign of angle
                 // Stay in this state until angle is minimized
-                //currentDrive.theta = atan2(currentDrive.y - currentLocation.y, currentDrive.x - currentLocation.x);
 
-                // Calculate the diffrence between current and desired heading in radians.
+
+                // Calculate the difference between current and desired heading in radians.
                 float errorYaw = angles::shortest_angular_distance(currentLocation.theta, currentDrive.theta);
 
                 //Calculate absolute value of angle
                 float abs_error = fabs(angles::shortest_angular_distance(currentLocation.theta, currentDrive.theta));
 
-
+                // If we have not completed the turn
+                // TODO: This needs fixing because there might be a case where we overshoot
                 if(abs_error >= finalRotationTolerance){
                     cout << "DRIVE: correction angle: " << abs_error<<endl;
                     //find out if left or right
                     //if need to turn right
                     if (errorYaw < 0){
                         cout << "DRIVE: RightMin: "<<rightMin<<endl;
-                        sendDriveCommand(rightMin, -rightMin);
+                        //sendDriveCommand(leftMin, -rightMin);
+                        left = leftMin;
+                        right = -rightMin;
                     } else {
                         cout << "DRIVE: LeftMin: " << leftMin <<endl;
-                        sendDriveCommand(-leftMin, leftMin);
+                        //sendDriveCommand(-leftMin, rightMin);
+                        left = -leftMin;
+                        right = rightMin;
                     }
 
-                    return false;
+                    break;
                 } else {
                      stop();
                      stateMachineState = STATE_MACHINE_SKID_STEER;
+                     cout << "DRIVE: Switching to skid"<<endl;
+                     break;
                 }
 
             }
             case STATE_MACHINE_SKID_STEER:
             {
-                // Calculate angle between currentLocation.y and currentDrive.Y
-                // Drive forward
-                // Stay in this state until angle is at least PI/2
 
                 // calculate the distance between current and desired heading in radians
-                currentDrive.theta = atan2(currentDrive.y - currentLocation.y, currentDrive.x - currentLocation.x);
                 float errorYaw = angles::shortest_angular_distance(currentLocation.theta, currentDrive.theta);
-                float distanceToDrive = hypot(currentDrive.x - currentLocation.x, currentDrive.y - currentLocation.y);
+                float distanceDriven = fabs(hypot(currentDrive.x - currentLocation.x, currentDrive.y - currentLocation.y));
 
-                cout << "DRIVE: Distance: " << distanceToDrive << endl;
-                // goal not yet reached drive while maintaining proper heading.
-                if (fabs(errorYaw) < M_PI_2 &&  distanceToDrive > waypointTolerance){
-                    fastPID((searchVelocity-linear) ,0, searchVelocity, 0);
-                } else {                   
-                    // stopno change
-                    stop();
-                    // move back to transform step
-                    stateMachineState = STATE_MACHINE_ROTATE;
-                    return true;
+                if(fabs(errorYaw) < rotateOnlyAngleTolerance){
+                    cout << "DRIVE: Distance: " << distanceDriven << endl;
+                    // goal not yet reached drive while maintaining proper heading.
+                    if (distanceDriven < this->distance){
+                        fastPID((searchVelocity-linear) ,0, searchVelocity, 0);
+                    } else {
+                        // stopno change
+                        stop();
+                        // move back to transform step
+                        stateMachineState = STATE_MACHINE_ROTATE;
+                        this->distance = -1;
+                        this->direction = -1;
+                        return true;
+                    }
+                } else {
+                    stateMachineState = FINAL_ROTATE;
                 }
                 break;
             }
@@ -274,9 +308,10 @@ bool DriveController::goToDistance(float distance, float direction){
         this->distance = distance;
         this->direction = direction;
 
-        currentDrive.x = OdometryHandler::instance()->getX() + (distance * cos(direction));     //Find x
-        currentDrive.y = OdometryHandler::instance()->getY() + (distance * sin(direction));     //Find y
+        currentDrive.x = OdometryHandler::instance()->getX();     //Find x
+        currentDrive.y = OdometryHandler::instance()->getY();     //Find y
         currentDrive.theta = direction;
+        isDistanceTurnedInit = false;
     }
     return false;
 
@@ -353,6 +388,13 @@ void DriveController::sendDriveCommand(double left, double right){
     drivePublisher.publish(velocity);
 }
 
+
+void DriveController::sendDriveCommandNoFix(double left, double right){
+    velocity.linear.x = left;
+    velocity.angular.z = right;
+
+    drivePublisher.publish(velocity);
+}
 
 
 
