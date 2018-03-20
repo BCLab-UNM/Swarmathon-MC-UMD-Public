@@ -4,7 +4,6 @@
 
 //Built-in Arduino libraries
 #include <Wire.h>
-
 //Custom libraries located in Swarmathon-Arduino repo
 #include <L3G.h>
 #include <LPS.h>
@@ -26,9 +25,9 @@
 //Gripper (HS-485HB Servo)
 byte fingersPin = 9;
 byte wristPin = 12;
-int fingerMin = 800; //if you want to shift 0 to a new location raise min; this is closed
+int fingerMin = 700; //if you want to shift 0 to a new location raise min; this is closed
 int fingerMax = 2600; //if you want to limit max travel lower max; this is open
-int wristMin = 1400; //this is up
+int wristMin = 1300; //this is up
 int wristMax = 2600; //this is down
 
 //Movement (VNH5019 Motor Driver Carrier)
@@ -39,14 +38,12 @@ byte leftDirectionA = A5; //"clockwise" input
 byte leftDirectionB = A4; //"counterclockwise" input
 byte leftSpeedPin = 10; //PWM input
 
-// Modify before merge
-
 //Odometry (8400 CPR Encoder)
 byte rightEncoderA = 7;
 byte rightEncoderB = 8;
 byte leftEncoderA = 0;
 byte leftEncoderB = 1;
-float wheelBase = 27.8; //distance between left and right wheels (in cm)
+float wheelBase = 45; //distance between left and right wheels (in cm)
 float wheelDiameter = 12.2; //diameter of wheel (in cm)
 int cpr = 8400; //"cycles per revolution" -- number of encoder increments per one wheel revolution
 
@@ -75,7 +72,6 @@ Servo wrist;
 NewPing leftUS(leftSignal, leftSignal, 330);
 NewPing centerUS(centerSignal, centerSignal, 330);
 NewPing rightUS(rightSignal, rightSignal, 330);
-
 
 /////////////
 ////Setup////
@@ -221,6 +217,15 @@ void parse() {
     int angle = RAD2DEG(radianAngle); // Convert float radians to int degrees
     angle = wristMin + (wristMax/370) * angle;
     wrist.writeMicroseconds(angle);
+  } else if (rxBuffer == "o"){
+    float newAngle = Serial.parseFloat();
+    odom.theta = newAngle;
+  } else if (rxBuffer == "x"){
+    float newX = Serial.parseFloat();
+    odom.x = newX;
+  } else if (rxBuffer == "y"){
+    float newY = Serial.parseFloat();
+    odom.y = newY;
   }
 }
 
@@ -278,12 +283,16 @@ String updateOdom() {
   String txBuffer;
   odom.update();
 
-  txBuffer = String(odom.x) + "," +
-             String(odom.y) + "," +
+  txBuffer = String(odom.dx) + "," +
+             String(odom.dy) + "," +
              String(odom.theta) + "," +
              String(odom.vx) + "," +
              String(odom.vy) + "," +
-             String(odom.vtheta);
+             String(odom.vtheta)+ ","+
+             String(odom.getLeftEncoder())+ "," +
+             String(odom.getRightEncoder()) +","+
+             String(odom.x)+","+
+             String(odom.y);
 
   return txBuffer;
 }
@@ -301,8 +310,9 @@ void imuInit() {
 
   magnetometer_accelerometer.init();
   magnetometer_accelerometer.enableDefault();
-  magnetometer_accelerometer.m_min = (LSM303::vector<int16_t>){ -2247,  -2068,  -1114};
-  magnetometer_accelerometer.m_max = (LSM303::vector<int16_t>){+3369,  +2877,  +3634};
+  // 414 calibration nums
+  magnetometer_accelerometer.m_min = (LSM303::vector<int16_t>){ -2749,  -3494,  -1788};
+  magnetometer_accelerometer.m_max = (LSM303::vector<int16_t>){+3813,  +1857,  +3578};
   magnetometer_accelerometer.setTimeout(1);
 
   pressure.init();
