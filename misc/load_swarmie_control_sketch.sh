@@ -38,7 +38,7 @@ leo_pref="$leo_pref --pref serial.port=$arduino_port"
 leo_pref="$leo_pref --pref build.verbose=true"
 leo_pref="$leo_pref --pref upload.verbose=true"
 leo_pref="$leo_pref --pref build.path=/tmp"
-#leo_pref="$leo_pref --pref sketchbook.path=../arduino/"
+leo_pref="$leo_pref --pref sketchbook.path=../arduino/"
 leo_pref="$leo_pref --pref board=leonardo"
 ~/arduino-1.8.5/arduino $leo_cmd $leo_pref
 if [ $? -ne 0 ]; then
