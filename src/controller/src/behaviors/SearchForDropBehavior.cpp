@@ -155,6 +155,7 @@ bool SearchForDropBehavior::tick(){
             }
         }
     } else {
+        SonarHandler::instance()->setEnable(true);
         return true;
     }
 
