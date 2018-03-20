@@ -8,6 +8,9 @@ void leftEncoderBChange();
 
 //Global Variables
 int rightEncoderCounter;
+int e_right;
+
+int e_left;
 int leftEncoderCounter;
 byte _rightEncoderAPin;
 byte _rightEncoderBPin;
@@ -55,27 +58,41 @@ void Odometry::update() {
     
     //Decompose linear distance into its component values
     float meanWheelDistance = (rightWheelDistance + leftWheelDistance) / 2;
-    x = meanWheelDistance * cos(dtheta);
-    y = meanWheelDistance * sin(dtheta);
+    x = meanWheelDistance * cos(theta);
+    y = meanWheelDistance * sin(theta);
+     
+    dx = meanWheelDistance * cos(dtheta);
+    dy = meanWheelDistance * sin(dtheta);
+
+
     //Calculate linear velocity
-    vx = x / (millis() - clock) * 1000;
-    vy = y / (millis() - clock) * 1000;
+    vx = dx / (millis() - clock) * 1000;
+    vy = dy / (millis() - clock) * 1000;
     
+
+
+	
+    	
+
     //Reset counters
     rightEncoderCounter = 0;
-    leftEncoderCounter = 0;
-    
+    leftEncoderCounter = 0;    
     //Reset clock
     clock = millis();
 }
+
+int Odometry::getLeftEncoder(){int t = e_left; e_left = 0; return t;}
+int Odometry::getRightEncoder(){int t = e_right; e_right = 0; return t;}
 
 void rightEncoderAChange() {
     bool rightEncoderAStatus = digitalRead(_rightEncoderAPin);
     bool rightEncoderBStatus = digitalRead(_rightEncoderBPin);
     if (((rightEncoderAStatus == HIGH) && (rightEncoderBStatus == LOW)) || ((rightEncoderAStatus == LOW) && (rightEncoderBStatus == HIGH))) {
         rightEncoderCounter++;
+	e_right++;
     }
     else {
+	e_right--;
         rightEncoderCounter--;
     }
 }
@@ -85,8 +102,10 @@ ISR (PCINT0_vect) {
     bool rightEncoderBStatus = digitalRead(_rightEncoderBPin);
     if (((rightEncoderAStatus == HIGH) && (rightEncoderBStatus == HIGH)) || ((rightEncoderAStatus == LOW) && (rightEncoderBStatus == LOW))) {
         rightEncoderCounter++;
+	e_right++;
     }
     else {
+	e_right--;
         rightEncoderCounter--;
     }
 }
@@ -95,9 +114,11 @@ void leftEncoderAChange() {
     bool leftEncoderAStatus = digitalRead(_leftEncoderAPin);
     bool leftEncoderBStatus = digitalRead(_leftEncoderBPin);
     if (((leftEncoderAStatus == HIGH) && (leftEncoderBStatus == HIGH)) || ((leftEncoderAStatus == LOW) && (leftEncoderBStatus == LOW))) {
-        leftEncoderCounter++;
+         e_left++;
+	 leftEncoderCounter++;
     }
     else {
+	e_left--;
         leftEncoderCounter--;
     }
 }
@@ -106,9 +127,11 @@ void leftEncoderBChange() {
     bool leftEncoderAStatus = digitalRead(_leftEncoderAPin);
     bool leftEncoderBStatus = digitalRead(_leftEncoderBPin);
     if (((leftEncoderAStatus == HIGH) && (leftEncoderBStatus == LOW)) || ((leftEncoderAStatus == LOW) && (leftEncoderBStatus == HIGH))) {
-        leftEncoderCounter++;
+        e_left++;
+	leftEncoderCounter++;
     }
     else {
+	e_left--;
         leftEncoderCounter--;
     }
 }
