@@ -196,6 +196,7 @@ void tick(const ros::TimerEvent&) {
 
             // Put the first behavior on stack
             SMACS::instance()->push(new SearchBehavior());
+            SMACS::instance()->setTime();
             SonarHandler::instance()->setEnable(true);
 
 

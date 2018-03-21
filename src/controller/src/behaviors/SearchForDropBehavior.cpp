@@ -93,10 +93,10 @@ bool SearchForDropBehavior::tick(){
                     }
 
                     //get random angle (up to ~60 deg)
-                    theta = rng->gaussian(OdometryHandler::instance()->getTheta(), 1);
+                    theta = rng->gaussian(OdometryHandler::instance()->getTheta(), 1.0);
 
                     //get rand dist
-                    distance =  ((rand() %10) + 1) / 10;
+                    distance =  ((float)((rand() %10) + 1) / 10.0) + 0.4;
 
                 }
 

@@ -48,6 +48,7 @@ class SearchForDropBehavior : public Behavior{
     public:
         SearchForDropBehavior() : Behavior(SEARCH_FOR_DROP_BEHAVIOR_TYPE){
             srand(time(NULL));
+            rng = new random_numbers::RandomNumberGenerator();
         }
 
         bool tick();
