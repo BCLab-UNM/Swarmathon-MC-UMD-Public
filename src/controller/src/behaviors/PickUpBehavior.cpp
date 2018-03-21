@@ -113,11 +113,9 @@ bool PickUpBehavior::tick(){
                 if (blockYawError < 0){
                     //turn left
                     if(abs_blockYaw - abs_error > 0){
-                        cout << "PICKUPDIR: left turn"<<endl;
                         DriveController::instance()->sendDriveCommand(leftNeg, rightPos);
                         fix(true, false);
                     }else{
-                        cout << "PICKUPDIR: right turn"<<endl;
                         DriveController::instance()->sendDriveCommand(leftPos, rightNeg);
                         fix(false, true);
                     }
@@ -125,11 +123,9 @@ bool PickUpBehavior::tick(){
                 } else {
                     //trun right
                     if(abs_blockYaw - abs_error > 0){
-                        cout << "PICKUPDIR: right turn"<<endl;
                         DriveController::instance()->sendDriveCommand(leftPos, rightNeg);
                         fix(false, true);
                     } else {
-                        cout << "PICKUPDIR: left turn"<<endl;
                         DriveController::instance()->sendDriveCommand(leftNeg, rightPos);
                         fix(true, false);
                     }
@@ -151,7 +147,6 @@ bool PickUpBehavior::tick(){
 
             //Drive and count how far we have driven
             float distance = hypot(initX - currX, initY - currY);
-            cout << "PICKUP: distance left " << (blockDistance - distance) << " Curr dist: "<<distance<< endl;
 
             if(blockDistance - distance <= 0.35){
                 currentStage = LOCK_TARGET;
@@ -189,22 +184,18 @@ bool PickUpBehavior::tick(){
                 if (blockYawError < 0){
                     //turn left
                     if(abs_blockYaw - abs_error - 0.175 > 0){
-                        cout << "PICKUPDIR: left pres turn"<<endl;
                         DriveController::instance()->sendDriveCommand(leftNeg, rightPos);
                         fix(true, false);
                     }else{
-                        cout << "PICKUPDIR: right pres turn"<<endl;
                         DriveController::instance()->sendDriveCommand(leftPos, rightNeg);
                         fix(false, true);
                     }
                 } else {
                     //trun right
                     if(abs_blockYaw - abs_error - 0.175 > 0){
-                        cout << "PICKUPDIR: right pres turn"<<endl;
                         DriveController::instance()->sendDriveCommand(leftPos, rightNeg);
                         fix(false, true);
                     }else{
-                        cout << "PICKUPDIR: left pres turn"<<endl;
                         DriveController::instance()->sendDriveCommand(leftNeg, rightPos);
                         fix(true, false);
                     }
@@ -223,7 +214,6 @@ bool PickUpBehavior::tick(){
 
             //Drive and count how far we have driven
             float distance = hypot(initX - currX, initY - currY);
-            cout << "PICKUP: distance left " << (blockDistance - distance) << " Curr dist: "<<distance<< endl;
 
             if(blockDistance - distance <= 0.13){
                 currentStage = PICK_UP;
@@ -245,7 +235,6 @@ bool PickUpBehavior::tick(){
             if(!wait(2)){
                 // check if picked up
                 float sonarCenter = SonarHandler::instance()->getSonarCenter();
-                cout << "PICKUP: Center sonar: " <<sonarCenter<< endl;
 
                 if(sonarCenter < 0.14){
                     //TODO: maybe add a camera block seen chack by checking how far is the picked up block from camera
@@ -292,7 +281,6 @@ bool PickUpBehavior::tick(){
                             blockDistanceFromCamera = hypot(hypot(tags[target].getPositionX(), tags[target].getPositionY()), tags[target].getPositionZ());
                         }
                     }
-                    cout << "CUBECAMPICKUP: distance" << blockDistanceFromCamera << endl;
                     // make a camera check
                     if (blockDistanceFromCamera < 0.14){
                         ClawController::instance()->wristDownWithCube();
@@ -322,7 +310,6 @@ bool PickUpBehavior::tick(){
             // target was not seen. Drive back and pick up
             //Drive and count how far we have driven
             float distance = hypot(initX - currX, initY - currY);
-            cout << "PICKUP: distance drove back " << (distance) << " out of : "<<driveBackDist<< endl;
 
             if(distance >= driveBackDist){
                 int numberOftags = TargetHandler::instance()->getNumberOfCenterTagsSeen();
@@ -365,7 +352,6 @@ bool PickUpBehavior::tick(){
 
             //Drive and count how far we have driven
             float distance = hypot(initX - currX, initY - currY);
-            cout << "PICKUP: distance drove back " << (distance) << " out of : "<<driveBackDist<< endl;
 
             if(distance >= driveBackDist){
                 DriveController::instance()->stop();
@@ -418,9 +404,9 @@ bool PickUpBehavior::tick(){
 void PickUpBehavior::fix(bool left, bool right){
     //get encoders
 	if(left){
-		cout << "PICKUPLEARN: "<<leftNeg<<" "<<rightPos<<endl;
+        cout << "PICKUPLEARN: "<<leftNeg<<" "<<rightPos<<endl;
 	} else {
-		cout << "PICKUPLEARN: "<<leftPos<<" "<<rightNeg<<endl;
+        cout << "PICKUPLEARN: "<<leftPos<<" "<<rightNeg<<endl;
 	}
     int e_left = EncoderHandler::instance()->getEncoderLeft();
     int e_right = EncoderHandler::instance()->getEncoderRight();
@@ -475,7 +461,6 @@ bool PickUpBehavior::wait(int sec){
     } else {
         time(&currTime);
         int secSince = difftime(currTime, initTime);
-        cout << "PICKUP: Waiting: "<<secSince<<" out of "<<sec<<endl;
         if(difftime(currTime, initTime) >= sec){
             waiting = false;
             return false;

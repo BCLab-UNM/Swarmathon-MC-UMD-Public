@@ -12,9 +12,9 @@ bool SearchAlgorithmBehavior::tick(){
         }else if(turnAround) {
             determineRovers();
         }else{
-            cout<<"SEARCH: Drive"<<endl;
+
             if(DriveController::instance()->goToLocation(x, y)){
-                cout<<"SEARCH: NEW Point"<<endl;
+
                 determineRovers();
             }
         }
@@ -67,7 +67,7 @@ void SearchAlgorithmBehavior::determineRovers(){
                     AlgorithmB = true;
                     //White, Ajax on the simulator by default
 
-                    cout<<"Algorithm: B"<<endl;
+
                 }
 
                 else if(right < center && right < left && center < 2){

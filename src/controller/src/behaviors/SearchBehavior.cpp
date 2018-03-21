@@ -7,7 +7,7 @@ bool SearchBehavior::tick(){
         nextPoint();
     } else {
         if(DriveController::instance()->goToDistance(distance, theta)){
-            cout<<"SEARCH: NEW Point"<<endl;
+
             nextPoint();
             SMACS::instance()->setTime();
         }
@@ -24,14 +24,14 @@ void SearchBehavior::nextPoint(){
         distance = 0.5;
         x = OdometryHandler::instance()->getX() + ((distance) * cos(theta));
         y = OdometryHandler::instance()->getY() + ((distance) * sin(theta));
-        cout<<"SEARCH: Driving to first: "<<x<<" "<<y<<endl;
+
         first = false;
     } else if(second){
         theta = OdometryHandler::instance()->getTheta() + M_PI_2;
         distance = 2;
         x = OdometryHandler::instance()->getX() + ((distance) * cos(theta));
         y = OdometryHandler::instance()->getY() + ((distance) * sin(theta));
-        cout<<"SEARCH: Driving to second: "<<x<<" "<<y<<endl;
+
         second = false;
     } else if(third){
         theta = OdometryHandler::instance()->getTheta() + M_PI_2;
@@ -54,9 +54,9 @@ void SearchBehavior::nextPoint(){
 
 bool RandomSearchBehavior::tick(){
     if(DriveController::instance()->goToDistance(distance, theta)){
-        cout<<"SEARCH: NEW Point"<<endl;
+
         nextPoint();
-        cout<<"SEARCH: next: "<< theta <<" "<< distance <<endl;
+
         SMACS::instance()->setTime();
     }
 

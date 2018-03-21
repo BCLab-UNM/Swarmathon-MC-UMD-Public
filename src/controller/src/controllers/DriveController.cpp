@@ -53,13 +53,11 @@ bool DriveController::goToLocation(float x, float y){
                 // Also check if the dance is big enough to activate our failsafe. Meaning if the error between  
                 // angles is more than certain amount of degrees then activate the failsafe
                 if((prevDistanceTurned > currDistanceTurned) && (prevDistanceTurned - currDistanceTurned) > 0.0349){
-                    cout << "DRIVE:Going into final rotate because PID is crap! Curr d: "<<currDistanceTurned<<" prev_d: "<< prevDistanceTurned<<endl;
                     stop();
                     //move to final rotate step where robots rotate as slow as possible to minimize the angle
                     stateMachineState = FINAL_ROTATE;
                     isDistanceTurnedInit = false;
                 } else {
-                    cout << "DRIVE: Using PID to turn! Curr d:"<< currDistanceTurned <<" prev d: "<<prevDistanceTurned <<endl;
                     prevDistanceTurned = currDistanceTurned;
                     //Calculate absolute value of angle
                     float abs_error = fabs(angles::shortest_angular_distance(currentLocation.theta, currentDrive.theta));
@@ -92,16 +90,13 @@ bool DriveController::goToLocation(float x, float y){
                 // If we have not completed the turn 
                 // TODO: This needs fixing because there might be a case where we overshoot
                 if(abs_error >= finalRotationTolerance){
-                    cout << "DRIVE: correction angle: " << abs_error<<endl;
                     //find out if left or right
                     //if need to turn right
                     if (errorYaw < 0){
-                        cout << "DRIVE: RightMin: "<<rightMin<<endl;
                         //sendDriveCommand(leftMin, -rightMin);
                         left = leftMin;
                         right = -rightMin;
                     } else {
-                        cout << "DRIVE: LeftMin: " << leftMin <<endl;
                         //sendDriveCommand(-leftMin, rightMin);
                         left = -leftMin;
                         right = rightMin;
@@ -111,7 +106,6 @@ bool DriveController::goToLocation(float x, float y){
                 } else {
                      stop();
                      stateMachineState = STATE_MACHINE_SKID_STEER;
-                     cout << "DRIVE: Switching to skid"<<endl;
                      break;
 		}
 
@@ -120,7 +114,6 @@ bool DriveController::goToLocation(float x, float y){
             case STATE_MACHINE_SKID_STEER:
             {
 
-                cout << "DRIVE: Skiding"<<endl;
 
                 // calculate the angle between the current x and y and the desired to find out if we need to turn a little
                 currentDrive.theta = atan2(currentDrive.y - currentLocation.y, currentDrive.x - currentLocation.x);
@@ -155,7 +148,6 @@ bool DriveController::goToLocation(float x, float y){
                 break;
             }
         }
-         cout << "DRIVE: Left: " << left << "; Right: "<<right<<endl;
         sendDriveCommand(left, right);
     } else {
         //reset the drive controller and drive to new location
@@ -207,13 +199,12 @@ bool DriveController::goToDistance(float distance, float direction){
                 // Also check if the dance is big enough to activate our failsafe. Meaning if the error between
                 // angles is more than certain amount of degrees then activate the failsafe
                 if((prevDistanceTurned > currDistanceTurned) && (prevDistanceTurned - currDistanceTurned) > 0.0349){
-                    cout << "DRIVE:Going into final rotate because PID is crap! Curr d: "<<currDistanceTurned<<" prev_d: "<< prevDistanceTurned<<endl;
                     stop();
                     //move to final rotate step where robots rotate as slow as possible to minimize the angle
                     stateMachineState = FINAL_ROTATE;
                     isDistanceTurnedInit = false;
                 } else {
-                    cout << "DRIVE: Using PID to turn! Curr d:"<< currDistanceTurned <<" prev d: "<<prevDistanceTurned <<endl;
+
                     prevDistanceTurned = currDistanceTurned;
                     //Calculate absolute value of angle
                     float abs_error = fabs(angles::shortest_angular_distance(currentLocation.theta, currentDrive.theta));
@@ -246,16 +237,16 @@ bool DriveController::goToDistance(float distance, float direction){
                 // If we have not completed the turn
                 // TODO: This needs fixing because there might be a case where we overshoot
                 if(abs_error >= finalRotationTolerance){
-                    cout << "DRIVE: correction angle: " << abs_error<<endl;
+
                     //find out if left or right
                     //if need to turn right
                     if (errorYaw < 0){
-                        cout << "DRIVE: RightMin: "<<rightMin<<endl;
+
                         //sendDriveCommand(leftMin, -rightMin);
                         left = leftMin;
                         right = -rightMin;
                     } else {
-                        cout << "DRIVE: LeftMin: " << leftMin <<endl;
+
                         //sendDriveCommand(-leftMin, rightMin);
                         left = -leftMin;
                         right = rightMin;
@@ -265,7 +256,7 @@ bool DriveController::goToDistance(float distance, float direction){
                 } else {
                      stop();
                      stateMachineState = STATE_MACHINE_SKID_STEER;
-                     cout << "DRIVE: Switching to skid"<<endl;
+
                      break;
                 }
 
@@ -278,7 +269,7 @@ bool DriveController::goToDistance(float distance, float direction){
                 float distanceDriven = fabs(hypot(currentDrive.x - currentLocation.x, currentDrive.y - currentLocation.y));
 
                 if(fabs(errorYaw) < rotateOnlyAngleTolerance){
-                    cout << "DRIVE: Distance: " << distanceDriven << endl;
+
                     // goal not yet reached drive while maintaining proper heading.
                     if (distanceDriven < this->distance){
                         fastPID((searchVelocity-linear) ,0, searchVelocity, 0);
@@ -303,7 +294,7 @@ bool DriveController::goToDistance(float distance, float direction){
         }
         sendDriveCommand(left, right);
     } else {
-        cout << "DRIVE: diff dist reset: "<<this->distance << "  " << distance<<endl;
+
         //values are different from last time, so change to new values
         this->distance = distance;
         this->direction = direction;
@@ -330,14 +321,14 @@ bool DriveController::turnToTheta(float theta){
     float abs_error = fabs(angles::shortest_angular_distance(currTheta, theta));
 
     if(abs_error >= finalRotationTolerance){
-        cout << "DRIVE: correction angle: " << abs_error<<endl;
+
         //find out if left or right
         //if need to turn right
         if (errorYaw < 0){
-            cout << "DRIVE: RightMin: "<<rightMin<<endl;
+
             sendDriveCommand(rightMin, -rightMin);
         } else {
-            cout << "DRIVE: LeftMin: " << leftMin <<endl;
+
             sendDriveCommand(-leftMin, leftMin);
         }
 

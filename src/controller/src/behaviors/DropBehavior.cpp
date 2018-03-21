@@ -18,7 +18,6 @@ bool DropBehavior::tick(){
             double currX= OdometryHandler::instance()->getX();
             double currY = OdometryHandler::instance()->getY();
 
-            cout<<"CENTERDRIVE: "<<hypot(x - currX, y - currY)<<endl;
 
             //While disnace driven is less than 0.3 of a meter
             if(hypot(x - currX, y - currY) < 0.3){

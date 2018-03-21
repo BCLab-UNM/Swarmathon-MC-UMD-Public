@@ -17,10 +17,8 @@ bool CalibrateBehavior::tick(){
             //Left positive, right negative
             //if enought time passed
             if(millis() - lastMillis > millisToNextIncrease){
-                cout<<"CALIBRATION: "<<" turning left: "<< leftWheelMinNeg <<", " << rightWheelMinPos << endl;
                 int left = fabs(EncoderHandler::instance()->getEncoderLeft());
                 int right = fabs(EncoderHandler::instance()->getEncoderRight());
-                cout<<"CALIBRATION: "<<"e_l: "<< left << "e_r: " << right << endl;
                 //if current encoders not equal the desired value
                 if(fabs(left - encoderTickStopPoint) > 10 && !leftTurnLeftWheel){
                     //if it is too fast slow down. If slow speed up
@@ -75,16 +73,13 @@ bool CalibrateBehavior::tick(){
                 DriveController::instance()->sendDriveCommand(-leftWheelMinNeg, rightWheelMinPos);
             }
 
-            cout << "CALIBRATION: " << "Error is :"<< error << endl;
 
             break;
         }
 
         case FIND_RATIO:
         {
-            cout <<"CALIBRATION: left: " <<leftWheelMinPos<<" right: "<<rightWheelMinPos<<endl;
             DriveController::instance()->stop();
-            cout <<"CALIBRATION: Setting mins "<<endl;
             DriveController::instance()->setLeftRightMin(leftWheelMinPos, rightWheelMinPos);
             cout <<"CALIBRATION: Putting search "<<endl;
             SMACS::instance()->pushNext(new SearchBehavior());

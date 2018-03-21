@@ -38,7 +38,7 @@ bool SearchForDropBehavior::tick(){
             }
             case SEARCH_FOR_CENTER:
             {
-                cout<<"SEARCHCENTER: "<<x << " "<<y<<endl;
+
                 //If we do not see any tags yet. Try to drive around
                 if(DriveController::instance()->goToDistance(distance, theta)){
                     distance+=0.25;

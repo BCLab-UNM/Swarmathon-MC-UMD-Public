@@ -186,12 +186,10 @@ void TargetHandler::handle(const apriltags_ros::AprilTagDetectionArray::ConstPtr
               cubeTags.push_back(loc);
           } else { // if center tag
               centerTags.push_back(loc);
-              cout << "TARGETHANDLE: saw a center tag"<<endl;
           }
         }
         cubeTagsList = cubeTags;
         centerTagsList = centerTags;
-        cout << "TARGETHANDLE: Assigned center tag list"<<endl;
 
         if (cubeTagsList.size() > 0) {
             // Calculate the distance to the closest seen tag and store it
@@ -235,12 +233,10 @@ void TargetHandler::handle(const apriltags_ros::AprilTagDetectionArray::ConstPtr
                 blockDistance = epsilon;
             }
 
-            cout << "TARGET: Distance to closest: " << blockDistance << endl;
 
             //angle to block from bottom center of chassis on the horizontal.
             float blockYawError = atan((tags[target].getPositionX() + 0.023)/blockDistance)*1.05;
 
-            cout << "TARGET: Angle to closest:  " << blockYawError << endl;
             lastSeenBlockErrorYaw  = blockYawError;
         }
 
@@ -248,10 +244,8 @@ void TargetHandler::handle(const apriltags_ros::AprilTagDetectionArray::ConstPtr
         if (isHandlerOn && !hasCube && centerTagsList.size() > 0){
             // Avoid center behavior
             SMACS::instance()->pushWithMutex(new AvoidCenterBehavior);
-            cout << "TARGETHANDLE: center tag seen avoid is on"<<endl;
         } else if(hasCube && centerTagsList.size() > 0){
             // Drop cube behavior
-            cout << "TARGETHANDLE: center tag seen dropping cube"<<endl;
             SMACS::instance()->pushWithMutex(new DropBehavior);
         }
         // if handler is on and we see a center tag
@@ -265,7 +259,6 @@ void TargetHandler::handle(const apriltags_ros::AprilTagDetectionArray::ConstPtr
         // if no tags were seen clear the list so that we don't keep old tags
         cubeTagsList.clear();
         centerTagsList.clear();
-        cout << "TARGETHANDLE: Cleared center tag cleared"<<endl;
     }
 
 
