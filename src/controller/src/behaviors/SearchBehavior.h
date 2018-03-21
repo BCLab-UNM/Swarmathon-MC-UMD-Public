@@ -3,6 +3,9 @@
 
 #include "BehaviorInterface.h"
 #include "../controllers/DriveController.h"
+#include <cstdlib>
+#include <ctime>
+#include <random_numbers/random_numbers.h>
 
 class SearchBehavior: public Behavior{
     bool first = true;
@@ -18,6 +21,22 @@ class SearchBehavior: public Behavior{
 
     public:
         SearchBehavior() : Behavior(SEARCH_BEHAVIOR_TYPE){}
+        bool tick();
+        void nextPoint();
+};
+
+class RandomSearchBehavior: public Behavior{
+    float theta;
+    float distance;
+
+    bool first;
+    random_numbers::RandomNumberGenerator* rng;
+
+    public:
+        RandomSearchBehavior() : Behavior(SEARCH_BEHAVIOR_TYPE){
+            rng = new random_numbers::RandomNumberGenerator();
+            first = true;
+        }
         bool tick();
         void nextPoint();
 };

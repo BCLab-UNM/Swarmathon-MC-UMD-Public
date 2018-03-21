@@ -8,6 +8,7 @@ bool DropBehavior::tick(){
             y = OdometryHandler::instance()->getY();
             stage = DRIVE_TO_CENTER;
             SonarHandler::instance()->setEnable(false);
+            TargetHandler::instance()->setEnabled(false);
             break;
         }
         case DRIVE_TO_CENTER:
@@ -78,19 +79,18 @@ bool DropBehavior::tick(){
 //                OffsetController::instance()->centerY = y;
 //                OffsetController::instance()->centerTheta = OdometryHandler::instance()->getTheta();
 //            }
-
+            TargetHandler::instance()->setEnabled(false);
             break;
         }
         case DRIVE_BACK:
         {
-            TargetHandler::instance()->setEnabled(false);
             if(millis() - initTime > 2000){
                 //Drive back a meter
                 double currX= OdometryHandler::instance()->getX();
                 double currY = OdometryHandler::instance()->getY();
 
                 //While disnace driven is less than a meter
-                if(fabs(hypot(x - currX, y - currY)) < 1){
+                if(fabs(hypot(x - currX, y - currY)) < 1.5){
                     // Drive back
                     DriveController::instance()->sendDriveCommand(-slowDrive, -slowDrive);
                 } else {

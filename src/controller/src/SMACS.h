@@ -7,6 +7,7 @@
 #include <mutex>
 #include <iostream>
 #include <string>
+#include <sys/time.h>
 
 using namespace std;
 
@@ -30,6 +31,7 @@ class SMACS{
 
 public:
     string robotName;
+    long timeSinceLastUpdate;
 
     static SMACS* instance();
 
@@ -47,6 +49,14 @@ public:
     void pushNext(Behavior *b);
     bool isEmpty();
     bool tick();
+
+    long millis(){
+        struct timeval tp;
+        gettimeofday(&tp, 0);
+        long int ms = tp.tv_sec * 1000 + tp.tv_usec / 1000;
+        return ms;
+    }
+    void setTime(){timeSinceLastUpdate = millis();}
 };
 
 

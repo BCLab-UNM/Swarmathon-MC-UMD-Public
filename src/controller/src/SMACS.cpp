@@ -155,6 +155,26 @@ bool SMACS::tick(){
     // If stack is not empty
     if(!behaviorStack.empty()){
         cout << "STACK: " << "Ticking behvior: "<< behaviorStack.top()->getCurrentBehavior()<< endl;
+        int b = behaviorStack.top()->getCurrentBehavior();
+
+        //if behavior changed update time
+        if(b == PICKUP_BEHAVIOR_TYPE || b == DROP_BEHAVIOR_TYPE || b == DEFAULT_BEHAVIOR_TYPE || b == DRIVE_BEHAVIOR_TYPE ||
+                b == SEARCH_FOR_DROP_BEHAVIOR_TYPE || b==AVOID_CENTER_BEHAVIOR_TYPE){
+            setTime();
+        }
+
+        //if 3 min passed reset
+        if(millis() - timeSinceLastUpdate >= 180000){
+            TargetHandler::instance()->setEnabled(true);
+            TargetHandler::instance()->setHasCube(false);
+            SonarHandler::instance()->setEnable(true);
+            ClawController::instance()->fingerOpen();
+            ClawController::instance()->wristUp();
+            behaviorStack = std::stack <Behavior*>();
+            behaviorStack.push(new RandomSearchBehavior());
+            setTime();
+        }
+
         if(behaviorStack.top()->tick()){
             DriveController::instance()->stop();
             cout << "STACK: " << "Popped from stack"<< endl;
